@@ -86,10 +86,11 @@ deliberate interface and never reach inside. A business rule lives in exactly ON
 place; if you find yourself writing the same decision in a second file, that is a
 defect, not thoroughness.
 
-In this repository, `src/report-triage/` is the worked example: it owns what a
-verdict is, which verdict may follow which, what a valid report looks like, and where
-reports are stored. The user interface knows none of that. Detail:
-`rules/coding-standards.md` and `docs/adr/ADR-0001-*.md`.
+This branch has no domain module yet - see section 8. The `example` branch's
+`src/report-triage/` is a worked instance of the principle: it owns what a verdict
+is, which verdict may follow which, what a valid report looks like, and where
+reports are stored, and the user interface knows none of that. Detail:
+`rules/coding-standards.md` and, on that branch, `docs/adr/ADR-0001-*.md`.
 
 ---
 
@@ -116,10 +117,16 @@ line already says.
 
 ## 8. What this repository is
 
-A small, deliberately incomplete practice application: a queue of reported suspicious
-emails and an analyst who gives each one a verdict. Data lives in the browser. There
-is no authentication, no server database, no payment, no personal data.
+A clean workflow shell, not an application. `src/` holds a one-page placeholder and
+`tests/` holds one placeholder test per harness (unit and browser), each named and
+commented as something to delete once real code exists to test. There is no product
+here yet - that is the point, not an oversight.
 
-**Those absences are choices, not gaps.** They keep the thing small enough to read in
-ten minutes, which is the whole point. If a change requires adding one of them, that
-is a conversation, not a task.
+**The toolchain is ready.** TypeScript, ESLint, Vitest, Playwright and the CI
+workflow all run today, against the placeholder, exactly as they will against
+whatever gets built here next. `npm run verify` passing on a fresh clone is a fact
+about the harness, not about a feature.
+
+**The `example` branch holds a finished worked example** - a small phishing-report
+triage queue, built with this same workflow end to end. Look there to see what a
+finished change through this process looks like before you build your own.

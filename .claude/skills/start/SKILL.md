@@ -15,10 +15,12 @@ same failure as no routine at all.
 ## Step 1 - read these four things, in this order
 
 1. `AGENTS.md` - the rules you work under. All of it.
-2. `README.md` - what this application is and how to run it.
-3. `docs/PRODUCT_BRIEF.md` - who it is for and what it is deliberately not doing.
-4. `docs/adr/` - list the files, read the titles, and read in full only the ones that
-   govern what you are about to touch.
+2. `README.md` - what this repository is and how to run it.
+3. `docs/PRODUCT_BRIEF.md`, if it exists - who the application is for and what it is
+   deliberately not doing. A fresh clone of this template has no application yet, so
+   this file will not exist until one is built; that is expected, not a broken read.
+4. `docs/adr/`, if it exists - list the files, read the titles, and read in full only
+   the ones that govern what you are about to touch.
 
 Do NOT read every rule file in `rules/` now. Each one says at the top when it
 applies. Load it at the moment you are about to do the thing it governs. That is the

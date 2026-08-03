@@ -1,101 +1,77 @@
-# Phishing Report Triage
+# Cybersteps Training Starter
 
-A deliberately small classroom application for learning how to supervise a coding
-agent: read a small, honest codebase, make one bounded change, and review the diff.
+A template you clone before building anything. It does not contain an application.
+What it contains is a **way of working with an AI coding agent**: a checked-in set
+of instructions, plus the linter, test runner and CI setup those instructions
+assume - already wired together and already proven to run.
 
 ## What this is
 
-A queue where an employee reports a suspicious email (sender, subject, a short
-note, and the date it arrived), and a security analyst gives it a verdict:
-`New`, `Investigating`, or `Phishing`. The analyst can filter the queue by verdict.
+Normally a starter template gives you a working app to delete pieces of. This one is
+the opposite: there is no app yet. What is here instead is everything that stays true
+no matter what you end up building - the rules an agent follows, the commands that
+check its work, and the automation that runs those commands on every change.
 
-This is a classroom prototype. Data is stored only in your own browser, on your
-own computer. **Do not enter a real or sensitive phishing report** - use invented
-examples (a fake sender, a fake subject line). Nothing here is monitored, backed
-up, or shared with anyone.
+You bring the idea. The agent asks you questions about it, writes a short plan, and
+builds it inside this same structure, one verified step at a time.
 
-## What it deliberately does not have, and why
+## What is inside
 
-These are absences by design, not things that were forgotten:
+```text
+.
+├── AGENTS.md            - the rules an AI agent reads before doing anything here
+├── CLAUDE.md             - a one-line pointer so Claude Code also reads AGENTS.md
+├── rules/                - the detail behind AGENTS.md, one topic per file
+├── .claude/skills/       - the /start, /grill-me and /save commands the rules refer to
+├── .github/workflows/    - the automated check that runs on every proposed change
+├── src/                  - the application (today: a one-page placeholder)
+└── tests/                - the automated tests (today: one placeholder per kind)
+```
 
-- **No accounts or login.** There is one queue, used by one person at a time, in
-  one browser. Adding accounts would add a whole feature nobody asked for.
-- **No server or shared database.** Nobody needs two computers to see the same
-  queue. `localStorage` (built into every browser) is enough, and leaving it out
-  keeps this repository small enough to read in ten minutes.
-- **No real or personal data.** This is a teaching tool, not an incident-response
-  system. Treat every report you type here as a fictional example.
-- **No payments, no monorepo.** They are simply not part of the problem this app
-  solves.
+A few words that are worth defining once:
 
-If working through the exercises makes you want one of these, that is a sign you
-understood the app correctly - just do not build it here.
+- **Agent** - the AI tool doing the typing (Claude Code, Codex, or similar). You
+  talk to it in plain language; it reads and writes the files above.
+- **AGENTS.md** - the file an agent is expected to read first, every time. It is
+  short on purpose, and points to `rules/` for anything longer.
+- **A skill** (in `.claude/skills/`) - a named routine you trigger by typing its
+  name, like `/start`. It is a script written in plain English for the agent to
+  follow, not a program.
+- **CI** (Continuous Integration, in `.github/workflows/`) - a robot that repeats
+  the same checks on every change, so nobody has to remember to run them by hand.
 
-## Running it (step by step, for someone who has never cloned a repository)
+## How to start
 
-You need [Node.js](https://nodejs.org) version 22.12 or newer installed on your
-computer. If you use `nvm` (a tool for managing Node versions), run `nvm use` in
-this folder and it picks the right version automatically (see `.nvmrc`).
+You need [Node.js](https://nodejs.org) 22.12 or newer. If you use `nvm` (a tool for
+switching Node versions), run `nvm use` in this folder and it picks the right one
+automatically, from `.nvmrc`.
 
-1. Open a terminal and move into this folder:
+1. Clone this repository, then move into the folder it created:
    ```bash
-   cd path/to/starter
+   git clone <this repository's URL>
+   cd <repository-folder-name>
    ```
-2. Install the project's dependencies (downloads the libraries the app needs;
-   this only has to happen once, or whenever they change):
+2. Install its dependencies (the libraries the toolchain needs - a one-time step,
+   or whenever they change):
    ```bash
    npm ci
    ```
-3. Install the browser Playwright uses for automated tests (also a one-time step):
-   ```bash
-   npx playwright install chromium
-   ```
-4. Start the app:
-   ```bash
-   npm run dev
-   ```
-5. Open the address the terminal prints (usually `http://127.0.0.1:4173`) in your
-   web browser. You should see "Phishing Report Triage".
+3. Open the folder in your AI coding agent.
+4. Type `/start`.
 
-To stop the app, go back to the terminal and press `Ctrl+C`.
+That last command is the whole trick. It reads `AGENTS.md`, checks that the project
+still runs, and reports back what it found instead of guessing. From there, tell it
+in your own words what you want to build - it will interview you before writing any
+code.
 
-## Checking your work
+## The finished example
 
-Before you consider any change finished, run:
+This repository has a second branch, `example`, which was never stripped down. It
+holds a small, complete application - a phishing-report triage queue - built through
+this exact same workflow from start to finish. Look there to see what a finished
+change, reviewed and passing every check, actually looks like:
 
 ```bash
+git switch example
 npm run verify
 ```
-
-This runs, in order: a type check, the linter, the automated unit tests, and a
-production build. All four must pass.
-
-Then run the browser tests, which drive a real Chromium browser through the app:
-
-```bash
-npm run test:e2e
-```
-
-If any of these fail, read the output - it tells you what broke and where. A
-failing check is information, not something to work around.
-
-## What lives where
-
-- `src/report-triage/` - the rules: what a report looks like, what counts as a
-  valid one, which verdict can follow another, and how reports are stored. No
-  user-interface code lives here.
-- `src/ui/` - the screen. It asks `src/report-triage/` what to show and what to
-  do; it does not decide the rules itself.
-- `tests/` - `*.test.ts` files run in Node (fast, no browser); `*.browser.test.ts`
-  files drive a real browser (slower, more realistic).
-- `docs/` - the product brief, the day-two lab exercise, and one architecture
-  decision record explaining why the rules and the screen are kept apart.
-
-## Learning workflow
-
-1. Read `docs/PRODUCT_BRIEF.md` and `docs/adr/ADR-0001-report-triage-module-boundary.md`.
-2. Do the exercise in `docs/LAB.md`.
-3. Read the diff your coding agent produced before you trust it.
-4. Run the checks above yourself. A green run reported by an agent is a claim,
-   not proof.
-5. Swap with your pair and review each other's diff and evidence footer.
