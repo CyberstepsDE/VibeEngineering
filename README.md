@@ -26,7 +26,7 @@ builds it inside this same structure, one verified step at a time.
 ├── .claude/agents/       - one reviewer: a second pair of eyes that did not write the code
 ├── .claude/hooks/        - the guard that blocks a commit on the main branch
 ├── .github/workflows/    - the automated check that runs on every proposed change
-├── docs/                 - the lab script for the training days
+├── docs/                 - the hands-on lab guide (build a real app on this template)
 ├── src/                  - the application (today: a one-page placeholder)
 └── tests/                - the automated tests (today: one placeholder per kind)
 ```
