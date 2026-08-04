@@ -12,9 +12,17 @@ get back whether its email is protected against spoofing (SPF, DMARC, DKIM) and
 whether its website sends the security headers browsers respect. Two checks, one
 page, no accounts, no stored data.
 
-The eight stages below are the shape of the session, not a script to read aloud.
-Follow them in order; the words inside each "instructor says" line are a starting
-point, not a transcript.
+Stage 0 plus the nine stages below are the shape of the session, not a script to
+read aloud. Follow them in order; the words inside each "instructor says" line are
+a starting point, not a transcript.
+
+## Stage 0: before the session (one-time setup, not a build step)
+
+Ready before anyone is watching: the starter cloned fresh on the demo machine,
+`npm ci` already run so `node_modules/` is warm, and a Vercel account (the free
+Hobby plan, created as the Day 1 evening task) connected to the GitHub account that
+owns the repository. This is the pipeline the deploy stage rides on - set it up
+cold, in front of a class, and login friction eats the lab.
 
 ## Stage 1: `/start`, and tell the agent the goal
 
@@ -148,7 +156,29 @@ site.
 (call it directly, read the raw JSON back) before wiring the page to it - separates
 "does the function work" from "does the page call it correctly".
 
-## Stage 7: deploy to Vercel
+## Stage 7: review before deploy - a second agent attacks the change
+
+**Instructor says:** "The change is committed on a branch. Nothing ships until an
+agent that did not write it says SHIP."
+
+**The agent is asked:** nothing - this stage belongs to a SECOND agent. Open a
+fresh agent session, point it at the branch, and run the reviewer
+(`.claude/agents/reviewer.md` - read-only tools, no editing). It reads
+`git diff main...HEAD`, then every changed file in full, and runs `npm run verify`
+itself - believing its own run, not the builder's report. It returns SHIP or
+NO-SHIP, findings worst first, each carrying the concrete sequence that triggers
+it.
+
+**Done looks like:** an agent that did not write the change has said SHIP, on its
+own run of the checks. NO-SHIP findings go back to the first agent to fix; the
+reviewer reads the result again. Only then do we deploy.
+
+**If generation is slow:** if the reviewer answers SHIP immediately, read out its
+"what I tried" list - a review that names its attack paths teaches more than a
+bare pass. If time is short, fix only the findings that carry an executable
+sequence and name the rest to the class as notes.
+
+## Stage 8: deploy to Vercel
 
 **Instructor says:** "Right now this only exists on one laptop. Let's put it
 somewhere anyone can open."
@@ -165,7 +195,7 @@ account pre-authenticated on the demo machine before class, so login friction ne
 eats lab time; students without their own Vercel account can still watch the same
 deploy happen live.
 
-## Stage 8: secure it
+## Stage 9: secure it
 
 **Instructor says:** "We just built a tool that judges other sites' security
 headers. What does it say about our own?"
