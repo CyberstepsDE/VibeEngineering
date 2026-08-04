@@ -231,12 +231,16 @@ about your own?
 **Ask the agent:** to run the app's own header check against its own deployed
 URL, add whichever headers are missing, and then explain - in words, not
 necessarily in code, if time is short - what stops a stranger from using the
-public `/api/...` endpoint as a free way to probe arbitrary domains at volume,
-and what a minimal rate limit on that endpoint would look like.
+public `/api/...` endpoint as a free way to probe arbitrary domains at volume.
+Two guards fit in one sentence each: a minimal rate limit on the endpoint, and
+an allowlist of caller IP addresses checked inside the function itself (read
+the `x-forwarded-for` header - the hosting platform sets it, so it cannot be
+faked; to learn your own address, ask the function to echo what it sees).
 
 **Done looks like:** the app's own deployed headers pass its own check, and you
-can explain the rate-limiting gap even if the code for it was not written today.
+can explain both guards - the rate limit and the in-function IP allowlist -
+even if the code for them was not written today.
 
-**If it drags:** do the self-check and the header fixes live, and leave rate
-limiting as a spoken explanation and a follow-up task rather than code - a clear
+**If it drags:** do the self-check and the header fixes live, and leave the
+guards as a spoken explanation and a follow-up task rather than code - a clear
 explanation of an unfixed gap is worth more than a rushed fix nobody understood.
