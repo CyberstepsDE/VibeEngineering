@@ -11,7 +11,7 @@ its email is protected against spoofing (SPF, DMARC, DKIM) and whether its websi
 sends the security headers browsers respect. Two checks, one page, no accounts, no
 stored data.
 
-Stage 0 plus the nine stages below are the shape of the session, not a script to
+Stage 0 plus the ten stages below are the shape of the session, not a script to
 read aloud. Follow them in order; the words inside each "ask the agent" line are a
 starting point, not a transcript.
 
@@ -19,8 +19,8 @@ starting point, not a transcript.
 
 Ready before the build: this starter cloned fresh, `npm ci` already run so
 `node_modules/` is warm, and a Vercel account (the free Hobby plan) connected to
-the GitHub account that owns your repository. This is the pipeline the deploy
-stage rides on - setting it up cold in the middle of the lab eats the lab's best
+the GitHub account that owns your repository. This is the account Stage 8 links
+the project to - creating it cold in the middle of the lab eats the lab's best
 minutes.
 
 ## Stage 1: `/start`, and tell the agent the goal
@@ -185,7 +185,30 @@ tried" list - a review that names its attack paths teaches more than a bare
 pass. If time is short, fix only the findings that carry an executable sequence
 and keep the rest as notes.
 
-## Stage 8: deploy to Vercel
+## Stage 8: connect the pipeline - the agent does its own ops
+
+Vercel knows the account (Stage 0), but it has never heard of this project.
+Wiring the two together is work - and it is work an agent can do, like any
+other task: it reads the tool's documentation, runs the commands, and shows
+the output as proof. The same move sets up any command-line tool or MCP
+server you meet later.
+
+**Ask the agent:** to connect the project to Vercel from the terminal:
+`npx vercel login` (confirms the Stage 0 account in a browser window), then
+`npx vercel link` (ties this folder to a Vercel project, creating one - the
+setup questions' defaults are fine), then `npx vercel git connect` (takes the
+repository address from the local git config and connects it to the linked
+project, so every push builds from now on).
+
+**Done looks like:** `vercel link` has confirmed the project by name, and the
+project is visible in the Vercel dashboard.
+
+**If it drags:** the login handshake happens in a browser window - if the
+agent stalls waiting for it, finish the sign-in yourself and hand back only
+the `link` step. The commands are Vercel's own CLI reference: vercel.com/docs/cli
+(login, link, git).
+
+## Stage 9: deploy to Vercel
 
 So far this exists on one laptop. Put it somewhere anyone can open.
 
@@ -196,11 +219,11 @@ works end to end - both checks, called from the live URL, not from localhost.
 both checks, verified by actually opening that URL - on a phone is best - not by
 trusting a "deployed successfully" message.
 
-**If it drags or login blocks you:** authentication is a Stage 0 job - if it was
-skipped, finish the Vercel login now and re-run only the deploy; nothing else in
-the lab depends on it.
+**If it drags or login blocks you:** the login and the link are Stage 8 jobs -
+if they were skipped, run Stage 8 now and re-run only the deploy; nothing else
+in the lab depends on them.
 
-## Stage 9: secure it
+## Stage 10: secure it
 
 You just built a tool that judges other sites' security headers. What does it say
 about your own?
