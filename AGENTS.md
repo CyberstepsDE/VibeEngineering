@@ -49,7 +49,7 @@ repository and the tools. A question you could settle with one command costs som
 their attention and buys nothing. Ask only about things the system cannot tell you:
 what somebody WANTS, which trade-off they prefer, whether a scenario is real.
 
-**Read the decision log.** `docs/adr/` holds settled rulings. Before changing
+**Read the decision log.** `docs/adr/`, when it exists, holds settled rulings. Before changing
 something in an area an ADR governs, read it and follow it. If it needs to change,
 write a new one that supersedes it. Never silently re-decide.
 
@@ -57,12 +57,15 @@ write a new one that supersedes it. Never silently re-decide.
 
 ## 3. How work ships
 
-- Work on a short-lived branch. Never commit straight to the main branch.
+- Work on a short-lived branch. Never commit straight to the main branch. For
+  Claude Code this is enforced by a hook (`.claude/hooks/no-main-commit.sh` - only
+  exit 2 blocks); every other tool relies on you reading this line.
 - Run the full check before every commit: `npm run verify`. All of it green, no
   exceptions, and never remove a check to make it pass.
 - Open a pull request. Get it reviewed by someone - or something - that did not write
   it. An author checks whether the code does what they intended; a reviewer checks
   whether the intention was right. One person does not ask both questions at once.
+  This repository ships one such reviewer: `.claude/agents/reviewer.md`.
 - Merge, then verify the running result, not the pipeline's opinion of it.
 
 **A green pipeline proves the assertions somebody wrote. It says nothing about the

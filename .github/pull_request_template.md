@@ -4,31 +4,18 @@ What observable user or system behavior changed?
 
 ## Scope
 
-- Packet ID:
-- Base SHA:
-- Head SHA:
 - Changed paths:
-- Non-goals:
+- Non-goals (what this deliberately does not touch):
 
 ## Evidence
 
-- [ ] Typecheck
-- [ ] Lint
-- [ ] Unit tests
-- [ ] Build
-- [ ] Browser acceptance flow
-- [ ] Independent adversarial review of immutable diff
-- [ ] Security impact considered
+- [ ] `npm run verify` green on this branch
+- [ ] Reviewed by someone - or something - that did not write it
 - [ ] No forgotten untracked source or test files
 
 Describe what remains unverified:
 
-## Release
-
-- Preview URL and exact SHA:
-- Rollback path:
-- State file updated:
-
 ## Agent disclosure
 
-If an agent generated code, name the client/model class and the human verification performed. Do not treat disclosure as evidence of quality.
+If an agent generated code, name the tool and the human verification performed.
+Disclosure is not evidence of quality.

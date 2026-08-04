@@ -23,7 +23,10 @@ builds it inside this same structure, one verified step at a time.
 ├── CLAUDE.md             - a one-line pointer so Claude Code also reads AGENTS.md
 ├── rules/                - the detail behind AGENTS.md, one topic per file
 ├── .claude/skills/       - the /start, /grill-me and /save commands the rules refer to
+├── .claude/agents/       - one reviewer: a second pair of eyes that did not write the code
+├── .claude/hooks/        - the guard that blocks a commit on the main branch
 ├── .github/workflows/    - the automated check that runs on every proposed change
+├── docs/                 - the lab script for the training days
 ├── src/                  - the application (today: a one-page placeholder)
 └── tests/                - the automated tests (today: one placeholder per kind)
 ```
