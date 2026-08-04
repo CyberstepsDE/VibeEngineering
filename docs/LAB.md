@@ -120,13 +120,27 @@ field, a domain that does not exist at all.
 breaks on the first few tries, that is a finding too: say so, and try a stranger
 input until something does.
 
+**Then pin the fix with a test - and watch the agent configure itself.** Ask the
+agent to write a component test that types the exact input that just broke the app
+and asserts the fixed behaviour. The template deliberately ships no DOM test
+environment - the unit harness runs plain Node - so the agent has to notice the
+missing piece and add it itself: install the packages (jsdom and a component
+testing library), wire the test environment into the config, and prove it by
+running the new test red-green. Say this out loud: **the setup is not missing by
+accident, it is a task - an agent can extend its own harness, and you just watched
+it happen.**
+
 **Done looks like:** a real failure occurred, the agent correctly named its cause
-before touching code, and the fix is verified by re-running the same input that
-broke it - not just by re-reading the code.
+before touching code, the fix is verified by re-running the same input that broke
+it - not just by re-reading the code - and that input now lives in a component
+test the agent could only run after configuring the DOM environment on its own.
 
 **If generation is slow:** if no error surfaces within a couple of minutes, feed it
 a domain known to have no DNS records at all, or a malformed one - that reliably
-finds the gap between "the happy path works" and "the code handles reality".
+finds the gap between "the happy path works" and "the code handles reality". If
+time is short, the self-configuration beat can shrink to the install-and-config
+step with the test left as homework - the lesson is the agent extending its own
+harness, not the test itself.
 
 ## Stage 6: add the security-headers check - and hit a wall
 
