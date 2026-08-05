@@ -75,15 +75,20 @@ Three words worth defining once:
   folder and it picks the right version from `.nvmrc`.
 - An AI coding agent CLI: [Claude Code](https://code.claude.com), Codex CLI, or
   similar. The template is written for any of them; the hooks run in Claude Code.
-- A [GitHub](https://github.com) account, for your fork and for CI.
+- A [GitHub](https://github.com) account, for your own copy and for CI.
 
 ## How to use it, step by step
 
-1. **Fork this repository on GitHub** (the Fork button, top right). The fork is
-   yours: you can push to it, its CI runs for you, and this template stays clean.
-2. **Clone your own fork**, not this repository:
+1. **Click "Use this template" -> "Create a new repository"** (green button, top
+   right) and give your copy a name. This creates a CLEAN repository that is
+   fully yours: you push to it, its CI runs for you, and its history starts at
+   commit one. (A fork also works, but forks are for sending changes BACK to
+   this template - your own projects deserve their own history. Note: your copy
+   contains only the main branch; the worked `example` branch stays browsable
+   here on the template.)
+2. **Clone your own new repository**, not this template:
    ```bash
-   git clone <your-fork's-URL>
+   git clone <your-repository's-URL>
    cd <repository-folder-name>
    ```
 3. **Install the toolchain's dependencies** (one time, or when they change):
@@ -99,11 +104,10 @@ Three words worth defining once:
    merges through a pull request. `docs/LAB.md` is a guided first project if you
    want one.
 
-After the first project, your fork **is** your template: for the next idea,
-clone it into a new folder and start again at step 3 (or tick "Template
-repository" in your fork's GitHub settings, which adds a "Use this template"
-button). The rules, agents and checks come with it; `src/` and `tests/` are
-placeholders you replace.
+For the next idea, come back here and press "Use this template" again - every
+copy starts clean. The rules, agents and checks come with it; `src/` and
+`tests/` are placeholders you replace. `docs/LAB.md` walks the whole road once:
+own repo, live pipeline, an app built in stages, review, merge, production.
 
 ## The two review passes
 

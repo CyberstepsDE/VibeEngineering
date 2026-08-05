@@ -3,43 +3,149 @@
 ## What this is
 
 A lab guide anyone can follow: solo at home, in a group, or in a class with one
-person driving on a shared screen. There is no application here yet - just this
-template, an agent, and a plain-language goal. That is the point, not an oversight.
+person driving on a shared screen. You start from an empty folder. Stage 0 mints
+your own repository and proves a living deploy pipeline **before any code
+exists**; stages 1 to 9 build the app on top of it.
 
-**The goal, stated once:** a page where you type a domain name and get back whether
-its email is protected against spoofing (SPF, DMARC, DKIM) and whether its website
-sends the security headers browsers respect. Two checks, one page, no accounts, no
-stored data.
+**The goal, stated once:** a page where you type a domain name and see two
+things: whether its email can be spoofed - SPF, DMARC, DKIM - and whether its
+website sends the security headers browsers respect. Two checks, one page, no
+accounts, no stored data. Both halves are part of the goal from the start:
+stage 4 builds the first, stage 6 the second.
 
-Stage 0 plus the ten stages below are the shape of the session, not a script to
-read aloud. Follow them in order; the words inside each "ask the agent" line are a
-starting point, not a transcript.
+Stage 0 plus the nine stages below are the shape of the session, not a script to
+read aloud. Follow them in order; the words inside each "ask the agent" line are
+a starting point, not a transcript.
 
-## Stage 0: before you start (one-time setup, not a build step)
+**The standing rule, from stage 0 step 4 onward:** every push builds a preview;
+a merge to `main` builds production. Every build stage therefore ends the same
+way - commit, push, look at the preview - without being told again.
 
-Ready before the build: this starter cloned fresh, `npm ci` already run so
-`node_modules/` is warm, and a Vercel account (the free Hobby plan) connected to
-the GitHub account that owns your repository. This is the account Stage 8 links
-the project to - creating it cold in the middle of the lab eats the lab's best
-minutes.
+## Stage 0: your own repository and a living pipeline - before any code
 
-## Stage 1: `/start`, and tell the agent the goal
+Four steps, from an empty folder to a proven pipeline. Everything later rides on
+this; doing it cold in the middle of a build eats the session's best minutes.
 
-Open the template in the agent and type `/start` - nothing else yet. Let it read
-`AGENTS.md`, confirm `npm run verify` is green on a template with no application
-in it, and report back what it found - so you hear a tool describe its own
-starting state instead of assuming one.
+One prerequisite from earlier: a free Vercel account (the Hobby plan) tied to
+your GitHub account. If you do not have one yet, create it at vercel.com first -
+two minutes in the browser.
 
-Once it reports, give it the goal in one sentence: a page that checks a domain's
-email authentication and its website's security headers.
+### Step 1: mint your repository ("Use this template")
 
-**Done looks like:** the agent has stated, in its own words, what this repository
-currently is (a clean template, no app yet) and has repeated the goal back
-correctly. It has not written any code.
+Open **github.com/CyberstepsDE/VibeEngineering**. Press **Use this template ->
+Create a new repository**: owner - your account, name - after the project
+(`domain-check` works), create.
 
-**If it drags:** `/start` spends its time on `npm ci` and `npm run verify` - that
-pause is productive, not dead air. On slow wifi, run `npm ci` before the session
-so `node_modules/` is already warm.
+One sentence on the button: a **fork** stays tied to our repository and is the
+right tool for contributing back to the template; **Use this template** mints a
+fresh repository that is only yours - a clean history, no link back, with every
+rule, agent, hook and check already tracked.
+
+**Done looks like:** `github.com/<you>/domain-check` exists and shows the
+starter's files.
+
+### Step 2: clone it and wake the agent
+
+```bash
+git clone https://github.com/<you>/domain-check.git
+cd domain-check
+npm ci
+```
+
+Open the folder in your agent and type `/start` - nothing else yet. Let it read
+`AGENTS.md`, run `npm run verify` green on a template with no application in it,
+and report back what it found - a tool describing its own starting state instead
+of assuming one.
+
+**Done looks like:** the agent has stated, in its own words, what this
+repository currently is (a clean workflow template, no app yet) and the checks
+are green. The goal has not even been mentioned yet, and no code written.
+
+**If it drags:** `npm ci` on slow wifi is the usual culprit - run it before the
+session so `node_modules/` is already warm.
+
+### Step 3: the agent wires its own pipeline
+
+Hosting gets wired before any feature exists - and wiring a tool is agent work
+like any other: it runs the commands, reads the answers, and shows the output as
+proof. The same move configures any command-line tool or MCP server you meet
+later.
+
+**Ask the agent, in these words:** "Connect this project to Vercel from the
+terminal: log in, link the project, connect the git remote. Show me each
+output."
+
+What it will run, and what each command does:
+
+- `npx vercel login` - signs the CLI into your Vercel account. A browser window
+  opens and **you click the confirmation yourself - the one human step in the
+  whole pipeline.**
+- `npx vercel link` - ties this folder to a new Vercel project (the setup
+  questions' defaults are fine).
+- `npx vercel git connect` - takes the repository address from the local git
+  config and connects it to the linked project, so every push builds from now
+  on.
+
+The commands are Vercel's own CLI reference: vercel.com/docs/cli (login, link,
+git).
+
+**Done looks like:** `vercel link` has confirmed the project by name and the
+project is visible in the Vercel dashboard - a wired pipeline, still with no
+app.
+
+**If it drags:** if the agent stalls waiting on the login handshake, finish the
+sign-in in the browser yourself and hand back only the `link` step.
+
+### Step 4: prove the pipeline is alive
+
+Before any feature: one trivial change rides the whole road, so the road is
+known-good while everything is still simple.
+
+**Ask the agent:** "Change the page title in `index.html` to Domain Security
+Check. Make a branch, commit, push, and open a pull request - then hand me the
+preview address."
+
+Watch the road, in order:
+
+1. The commit lands on a **branch** - a commit on `main` is refused by the
+   template's hook, which you may even see happen.
+2. The **push** makes Vercel build a **preview**: a shareable address just for
+   this branch. Open it - the new title is live.
+3. The **pull request** makes CI run `npm run verify` on GitHub's machines -
+   watch the check turn green on the pull request page. (The check runs on the
+   pull request, not on a bare branch push.)
+4. **Merge** - the button is yours. Vercel builds `main`, and the **production**
+   address shows the change.
+
+Say the rule out loud once: **every push builds a preview; a merge to `main`
+builds production.** It holds for the rest of the lab, and for every project
+after it.
+
+**Done looks like:** the new title is live at the production address, and you
+watched it pass the preview and the green check on the way there.
+
+**If it drags:** the preview address is on the pull request page and in the
+Vercel dashboard; the green check lives on the pull request.
+
+## Stage 1: say the goal - both halves in one sentence
+
+The pipeline is live and empty. Now the goal - and it names both parts of the
+app from the first sentence.
+
+**Ask the agent** - give it the goal in one sentence: a page where you type a
+domain name and see two things: whether its email can be spoofed (SPF, DMARC,
+DKIM) and whether its website sends the security headers browsers respect. No
+accounts, nothing stored.
+
+This sentence is the scope: stage 4 builds the first half, stage 6 the second.
+When "security headers" returns later, it is this sentence being executed - not
+new work appearing.
+
+**Done looks like:** the agent has repeated the goal back with both halves
+intact and has not written any code.
+
+**If it drags:** if the agent starts proposing implementations already, hold it
+- the interview comes first.
 
 ## Stage 2: the agent interviews you (`/grill-me`)
 
@@ -47,9 +153,10 @@ Before it writes a line of code, it asks questions - answer as the person who
 wants this tool, not as a programmer.
 
 **Ask the agent:** to run `/grill-me` and interrogate the goal: who is this for,
-what counts as "protected", what happens on a domain with no records at all, what
-this deliberately does not do (no port scanning, no storing of domains anyone has
-looked up, no scanning of anything other than the one domain typed in).
+what counts as "protected", what happens on a domain with no records at all,
+what this deliberately does not do (no port scanning, no storing of domains
+anyone has looked up, no scanning of anything other than the one domain typed
+in).
 
 **Done looks like:** the agent produces the eight-line brief (`Actor`,
 `Observation`, `Outcome`, `Mechanism`, `Examples`, `Non-goals`, `Permissions`,
@@ -59,60 +166,79 @@ looked up, no scanning of anything other than the one domain typed in).
 the brief can be corrected later, and a fast, roughly-right answer teaches the
 pattern better than a stalled interview.
 
-## Stage 3: the agent writes the plan
+## Stage 3: the agent writes the plan - with both parts on it
 
-It does not start typing code yet either - it writes the plan first, so you can
+It does not start typing code yet either - the plan comes first, so you can
 object before it builds the wrong thing.
 
 **Ask the agent:** to turn the brief into a short, concrete plan: one page, one
-domain field, two independent results (email authentication, security headers),
-built in that order, with `README.md` updated to describe the real application
-once it exists.
+domain field; part one the email checks (SPF, DMARC, DKIM); part two the
+website's security headers; every check reporting pass, fail, or an honest "not
+detected"; all work on a branch with a commit and a push after every stage, so
+the preview always shows the latest state; `README.md` updated to describe the
+real application once it exists.
 
 **Done looks like:** a short, readable plan exists (in the chat or a file) that
-maps directly to the goal from Stage 1, and you have said "yes, build that"
-before any source file changes.
+names both parts and the push-after-every-stage rule, and you have said "yes,
+build part one" before any source file changes. The later stages execute this
+plan - stage 4 is part one, stage 6 is part two; nothing new appears mid-build.
 
 **If it drags:** accept a plan stated out loud instead of written to a file, and
 move on - the point is that a plan existed and was agreed to, not its format.
 
-## Stage 4: build the DNS checks (SPF, DMARC, DKIM)
+## Stage 4: build part one of the plan - the email checks (SPF, DMARC, DKIM)
 
 Build the part that needs no server at all - a browser can ask the internet's
 phone book directly.
 
 **Ask the agent:** to build the domain form and query DNS straight from the
-browser using DNS-over-HTTPS (DoH) - a way of asking a DNS question over a normal
-HTTPS request instead of the raw DNS protocol, which is why a browser can do it
-without any backend. Cloudflare's DoH JSON endpoint
+browser using DNS-over-HTTPS (DoH) - a way of asking a DNS question over a
+normal HTTPS request instead of the raw DNS protocol, which is why a browser can
+do it without any backend. Cloudflare's DoH JSON endpoint
 (`https://cloudflare-dns.com/dns-query`, with an `accept: application/dns-json`
-header) deliberately allows requests from any website's JavaScript - its response
-carries `Access-Control-Allow-Origin: *`. Concretely:
+header) deliberately allows requests from any website's JavaScript - its
+response carries `Access-Control-Allow-Origin: *`. Concretely:
 
 - **SPF** - a TXT record on the domain itself, starting with `v=spf1`.
 - **DMARC** - a TXT record on `_dmarc.<domain>`, starting with `v=DMARC1`.
 - **DKIM** - a TXT record on `<selector>._domainkey.<domain>`. There is no fixed
   selector; a real check can only try a short list of common ones (for example
-  `google`, `default`, `selector1`) and report "not detected", never "fail", when
-  none of them match - a wrong selector proves nothing about whether DKIM exists.
+  `google`, `default`, `selector1`) and report "not detected", never "fail",
+  when none of them match - a wrong selector proves nothing about whether DKIM
+  exists.
 
-**Done looks like:** typing a real domain shows a genuine pass or fail for SPF and
-DMARC, and an honest "not detected" (not a false "fail") for DKIM.
+**Done looks like:** typing a real domain shows a genuine pass or fail for SPF
+and DMARC, and an honest "not detected" (not a false "fail") for DKIM. The stage
+ends the standing way: commit, push, and the preview shows the working form at a
+shareable address.
 
-**If it drags:** have the agent get ONE query working end to end first - SPF on a
-single hardcoded domain, printed raw to the page - before generalizing to a form
-and all three records.
+**If it drags:** have the agent get ONE query working end to end first - SPF on
+a single hardcoded domain, printed raw to the page - before generalizing to a
+form and all three records.
 
-## Stage 5: run it, hit a real error, fix it together
+## Stage 5: the landing - you take the controls
 
-Now try to break it - not on purpose, just by using it the way a real person
-would. Try a domain with no DMARC record, a typo, an empty field, a domain that
-does not exist at all.
+The arc from the deck's opening, kept on purpose: setup was takeoff, the agent
+flew the build - **the landing is a human's**. Close the terminal: open the
+preview like a person who just got the link, and work the checklist by hand.
 
-**Ask the agent:** nothing scripted - read whatever error actually appears (in
-the page, or the browser console) and have it explain the error before fixing it.
-If nothing breaks on the first few tries, that is a finding too: say so, and try
-a stranger input until something does.
+The tester's checklist - five inputs, and what an honest page does with each:
+
+| You type | What should happen |
+| --- | --- |
+| a real domain with no DMARC | a plain fail or "absent" for DMARC - the other checks still reported |
+| a typo of the domain you meant | an answer for the domain you actually typed - the page cannot know what you meant; notice you scanned the wrong name |
+| an empty field | a polite refusal with a message - no request fired, nothing crashes |
+| a domain that does not exist | "domain not found" in plain words - not a stuck spinner, not console noise |
+| a full URL pasted in | cleaned to its domain, or refused with "enter a domain, not an address" - never silently queried as typed |
+
+If every row already behaves, feed stranger inputs until one gives - finding
+nothing after honestly trying is a result too.
+
+**For every breakage, in this order:** read the exact message (in the page or
+the browser console), name the cause in one sentence BEFORE any code is touched,
+then have the agent fix it - and prove the fix by re-running the same input that
+broke it, not by re-reading the code.
 
 **Then pin the fix with a test - and watch the agent configure itself.** Ask the
 agent to write a component test that types the exact input that just broke the
@@ -124,124 +250,134 @@ running the new test red-green. The point to notice: **the setup is not missing
 by accident, it is a task - an agent can extend its own harness, and you just
 watched it happen.**
 
-**Done looks like:** a real failure occurred, the agent correctly named its cause
-before touching code, the fix is verified by re-running the same input that broke
-it - not just by re-reading the code - and that input now lives in a component
-test the agent could only run after configuring the DOM environment on its own.
+**Done looks like:** every row of the checklist was tried on the preview; each
+cause was named from a real message before its fix; the failing inputs now pass
+and live in a component test the agent could only run after configuring the DOM
+environment on its own. Commit, push - the preview carries the fixes.
 
 **If it drags:** if no error surfaces within a couple of minutes, feed it a
 domain known to have no DNS records at all, or a malformed one - that reliably
 finds the gap between "the happy path works" and "the code handles reality". If
 time is short, the self-configuration beat can shrink to the install-and-config
-step with the test left for later - the lesson is the agent extending its own
-harness, not the test itself.
+step with the test left for later.
 
-## Stage 6: add the security-headers check - and hit a wall
+## Stage 6: part two of the plan - the wall, then the smallest backend
 
-Check headers the same way you just checked DNS - or try to.
+Part two of the plan, asked the obvious way - and it is worth hitting the wall
+for real.
 
-**Ask the agent:** first, to fetch a real site's response headers directly from
-the browser, the same way it fetched DNS - and hit the wall: a browser's `fetch`
-to another website is not allowed to read most of that response's headers unless
-the target site explicitly opts in, because reading a stranger's headers is
-exactly the kind of cross-site snooping the browser's security model exists to
-stop. Have the agent explain, in its own words, why this is a browser security
-rule and not a bug in the code just written - **this is the point of the whole
+**Ask the agent, in these words:** "Add the security-headers check the same way
+as the DNS check - fetch the target site straight from the browser. Try
+example.com."
+
+What you will see:
+
+- the report stays empty, and the browser console shows a message of this shape
+  (Chrome's wording; other browsers phrase the same refusal differently):
+
+  ```text
+  Access to fetch at 'https://example.com/' from origin
+  'https://<your-preview>.vercel.app' has been blocked by CORS policy:
+  No 'Access-Control-Allow-Origin' header is present on the requested
+  resource.
+  ```
+
+- the network tab lists the request - the answer reached the browser - but the
+  status column says "CORS error" and the page's script never gets to read it.
+
+Why: the blocker is the **browser** - not example.com, and not the code just
+written. A page's script may not read another site's response unless that site
+opts in; reading a stranger's responses is cross-site snooping, exactly what the
+browser's security model exists to stop. DNS worked with the same trick only
+because Cloudflare's endpoint opts in on purpose. Have the agent explain this
+wall in its own words before fixing anything - **this is the point of the whole
 lab.**
 
 Then: ask it to build the smallest thing that solves it - one small serverless
-function (in an `api/` folder, deployed on Vercel) that fetches the target site
+function (in an `api/` folder, deployed by Vercel) that fetches the target site
 from a server, where no browser cross-origin rule applies, and hands back just
-the headers that matter as plain JSON. The page then calls this function instead
-of calling the target site directly.
+the headers that matter as plain JSON. The page then calls this function -
+`/api/headers?domain=...` - instead of calling the target site directly.
 
 **Done looks like:** you can state, unprompted, why DNS worked from the browser
 and headers did not. The network tab shows the page calling your own `/api/...`
-endpoint, and that endpoint returning real header results for a real site.
+endpoint. The stage ends the standing way: commit, push - the preview returns
+real header results (serverless functions run on the preview too).
 
 **If it drags:** get the function working from the command line first (call it
 directly, read the raw JSON back) before wiring the page to it - that separates
 "does the function work" from "does the page call it correctly".
 
-## Stage 7: review before deploy - a second agent attacks the change
+## Stage 7: review before the merge - two passes attack the branch
 
-The change is committed on a branch. Nothing ships until an agent that did not
-write it says SHIP.
+The branch is pushed and its preview works. Nothing MERGES until minds that did
+not write the change say SHIP - both of them.
 
-**Ask the agent:** nothing - this stage belongs to a SECOND agent. Open a fresh
+**Ask the agent:** nothing - this stage belongs to fresh minds. Open a fresh
 agent session, point it at the branch, and run the two review passes from
-AGENTS.md section 3: first the logic reviewer
-(`.claude/agents/reviewer.md` - read-only tools, no editing), then the security
-pass (`.claude/agents/security-reviewer.md`, or Codex if you have it). The logic
-reviewer reads `git diff main...HEAD`, then every changed file in full, and runs
+`AGENTS.md` section 3: first the logic reviewer (`.claude/agents/reviewer.md` -
+read-only tools, no editing), then the security pass
+(`.claude/agents/security-reviewer.md`, or Codex if you have it - a different
+model has different blind spots). The logic reviewer reads
+`git diff main...HEAD`, then every changed file in full, and runs
 `npm run verify` itself - believing its own run, not the builder's report. Each
 pass returns SHIP or NO-SHIP, findings worst first, each carrying the concrete
 sequence that triggers it.
 
 **Done looks like:** both passes have said SHIP, on their own run of the checks,
-from a mind that did not write the change. NO-SHIP findings go back to the first
-agent to fix; the reviewer reads the result again. Only then do you deploy.
+from minds that did not write the change. NO-SHIP findings go back to the first
+agent to fix; the reviewer reads the result again. The merge waits on them -
+pushes and previews never did.
 
-**If it drags:** if the reviewer answers SHIP immediately, read its "what I
-tried" list - a review that names its attack paths teaches more than a bare
-pass. If time is short, fix only the findings that carry an executable sequence
-and keep the rest as notes.
+**If it drags:** if a reviewer answers SHIP immediately, read its "what I tried"
+list - a review that names its attack paths teaches more than a bare pass. If
+time is short, fix only the findings that carry an executable sequence and keep
+the rest as notes.
 
-## Stage 8: connect the pipeline - the agent does its own ops
+## Stage 8: merge - two SHIPs, one green robot check, and production builds itself
 
-Vercel knows the account (Stage 0), but it has never heard of this project.
-Wiring the two together is work - and it is work an agent can do, like any
-other task: it reads the tool's documentation, runs the commands, and shows
-the output as proof. The same move sets up any command-line tool or MCP
-server you meet later.
+Two different gates guard `main` - minds, and a robot - and the pull request
+page is where both show.
 
-**Ask the agent:** to connect the project to Vercel from the terminal:
-`npx vercel login` (confirms the Stage 0 account in a browser window), then
-`npx vercel link` (ties this folder to a Vercel project, creating one - the
-setup questions' defaults are fine), then `npx vercel git connect` (takes the
-repository address from the local git config and connects it to the linked
-project, so every push builds from now on).
+**Ask the agent:** nothing - this stage is yours. Open the pull request page and
+take stock:
 
-**Done looks like:** `vercel link` has confirmed the project by name, and the
-project is visible in the Vercel dashboard.
+- The **review passes** (stage 7) were minds reading the change - and they ran
+  on your machine. They are deliberately NOT in CI: there they would need model
+  API keys, so this repository keeps review local, and the push-time hook only
+  reminds you it exists.
+- The **CI check** is a robot: the same `npm run verify`, run by GitHub on every
+  pull request - it re-ran on every push. It cannot judge intent, and it cannot
+  be forgotten either.
 
-**If it drags:** the login handshake happens in a browser window - if the
-agent stalls waiting for it, finish the sign-in yourself and hand back only
-the `link` step. The commands are Vercel's own CLI reference: vercel.com/docs/cli
-(login, link, git).
+With two SHIPs and a green check: **merge** - the button is a human's. Vercel
+builds `main`; production carries the app.
 
-## Stage 9: deploy to Vercel
+**Done looks like:** real results for real domains on a phone, at the production
+address - both checks, live. The app working in your hand is the proof, not a
+"deployed successfully" line.
 
-So far this exists on one laptop. Put it somewhere anyone can open.
+**If it drags:** a red check on the pull request names the command that failed -
+run the same command locally, fix, push; the check re-runs on the new commit.
 
-**Ask the agent:** to deploy the project to Vercel and confirm the deployed site
-works end to end - both checks, called from the live URL, not from localhost.
+## Stage 9: secure it
 
-**Done looks like:** a public URL where typing a domain returns real results for
-both checks, verified by actually opening that URL - on a phone is best - not by
-trusting a "deployed successfully" message.
+You just built a tool that judges other sites' security headers. What does it
+say about your own?
 
-**If it drags or login blocks you:** the login and the link are Stage 8 jobs -
-if they were skipped, run Stage 8 now and re-run only the deploy; nothing else
-in the lab depends on them.
-
-## Stage 10: secure it
-
-You just built a tool that judges other sites' security headers. What does it say
-about your own?
-
-**Ask the agent:** to run the app's own header check against its own deployed
-URL, add whichever headers are missing, and then explain - in words, not
-necessarily in code, if time is short - what stops a stranger from using the
-public `/api/...` endpoint as a free way to probe arbitrary domains at volume.
-Two guards fit in one sentence each: a minimal rate limit on the endpoint, and
-an allowlist of caller IP addresses checked inside the function itself (read
-the `x-forwarded-for` header - the hosting platform sets it, so it cannot be
-faked; to learn your own address, ask the function to echo what it sees).
+**Ask the agent:** to run the app's own header check against its own production
+address, add whichever headers are missing (they ride the same road: branch,
+push, review, merge), and then explain - in words, not necessarily in code, if
+time is short - what stops a stranger from using the public `/api/...` endpoint
+as a free way to probe arbitrary domains at volume. Two guards fit in one
+sentence each: a minimal rate limit on the endpoint, and an allowlist of caller
+IP addresses checked inside the function itself (read the `x-forwarded-for`
+header - the hosting platform sets it, so it cannot be faked; to learn your own
+address, ask the function to echo what it sees).
 
 **Done looks like:** the app's own deployed headers pass its own check, and you
-can explain both guards - the rate limit and the in-function IP allowlist -
-even if the code for them was not written today.
+can explain both guards - the rate limit and the in-function IP allowlist - even
+if the code for them was not written today.
 
 **If it drags:** do the self-check and the header fixes live, and leave the
 guards as a spoken explanation and a follow-up task rather than code - a clear
