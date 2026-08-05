@@ -112,7 +112,8 @@ Watch the road, in order:
 2. The **push** makes Vercel build a **preview**: a shareable address just for
    this branch. Open it - the new title is live.
 3. The **pull request** makes CI run `npm run verify` on GitHub's machines -
-   watch the check turn green on the pull request page. (The check runs on the
+   watch the two checks turn green on the pull request page: `verify` (the
+   project's own gate) and `browser` (a robot browser clicking the page). (They run on the
    pull request, not on a bare branch push.)
 4. **Merge** - the button is yours. Vercel builds `main`, and the **production**
    address shows the change.
@@ -122,10 +123,10 @@ builds production.** It holds for the rest of the lab, and for every project
 after it.
 
 **Done looks like:** the new title is live at the production address, and you
-watched it pass the preview and the green check on the way there.
+watched it pass the preview and both green checks on the way there.
 
 **If it drags:** the preview address is on the pull request page and in the
-Vercel dashboard; the green check lives on the pull request.
+Vercel dashboard; the green checks live on the pull request.
 
 ## Stage 1: say the goal - both halves in one sentence
 
@@ -334,7 +335,7 @@ list - a review that names its attack paths teaches more than a bare pass. If
 time is short, fix only the findings that carry an executable sequence and keep
 the rest as notes.
 
-## Stage 8: merge - two SHIPs, one green robot check, and production builds itself
+## Stage 8: merge - two SHIPs, two green robot checks, and production builds itself
 
 Two different gates guard `main` - minds, and a robot - and the pull request
 page is where both show.
@@ -350,7 +351,7 @@ take stock:
   pull request - it re-ran on every push. It cannot judge intent, and it cannot
   be forgotten either.
 
-With two SHIPs and a green check: **merge** - the button is a human's. Vercel
+With two SHIPs and green checks: **merge** - the button is a human's. Vercel
 builds `main`; production carries the app.
 
 **Done looks like:** real results for real domains on a phone, at the production
