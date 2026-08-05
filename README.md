@@ -1,80 +1,163 @@
 # Cybersteps Training Starter
 
-A template you clone before building anything. It does not contain an application.
-What it contains is a **way of working with an AI coding agent**: a checked-in set
-of instructions, plus the linter, test runner and CI setup those instructions
-assume - already wired together and already proven to run.
+A template for a **way of working with an AI coding agent**. It is not an
+application - there is no product code here yet, and that is the point. What is
+checked in is everything that stays true no matter what you build: the rules the
+agent reads, the review agents that check its work, the commands that verify every
+change, and the automation that runs those commands for you.
 
-## What this is
-
-Normally a starter template gives you a working app to delete pieces of. This one is
-the opposite: there is no app yet. What is here instead is everything that stays true
-no matter what you end up building - the rules an agent follows, the commands that
-check its work, and the automation that runs those commands on every change.
-
-You bring the idea. The agent asks you questions about it, writes a short plan, and
-builds it inside this same structure, one verified step at a time.
+You bring the idea. The agent asks you questions about it, writes a short plan,
+and builds it inside this structure, one verified step at a time.
 
 ## What is inside
 
+Every tracked file, and why it is there:
+
 ```text
 .
-├── AGENTS.md            - the rules an AI agent reads before doing anything here
-├── CLAUDE.md             - a one-line pointer so Claude Code also reads AGENTS.md
-├── rules/                - the detail behind AGENTS.md, one topic per file
-├── .claude/skills/       - the /start, /grill-me and /save commands the rules refer to
-├── .claude/agents/       - one reviewer: a second pair of eyes that did not write the code
-├── .claude/hooks/        - the guard that blocks a commit on the main branch
-├── .github/workflows/    - the automated check that runs on every proposed change
-├── docs/                 - the hands-on lab guide (build a real app on this template)
-├── src/                  - the application (today: a one-page placeholder)
-└── tests/                - the automated tests (today: one placeholder per kind)
+├── AGENTS.md                          - the contract: rules an AI agent reads before doing anything
+├── CLAUDE.md                          - a stub that points Claude Code at AGENTS.md
+├── README.md                          - this file
+├── LICENSE                            - MIT
+├── rules/                             - the detail behind AGENTS.md, one topic per file
+│   ├── less-is-more.md                - gate 1: not a single unnecessary character
+│   ├── facts-only.md                  - gate 2: no claim without a citation
+│   ├── critical-thinking.md           - trust nothing until checked, your own conclusions included
+│   ├── coding-standards.md            - shape of the code: one module, one job, one home per rule
+│   ├── secrets.md                     - nothing secret ever touches version control
+│   └── what-checks-prove.md           - what a green check does and does not tell you
+├── .claude/
+│   ├── settings.json                  - hook wiring: session reminder, commit guard, push reminder
+│   ├── agents/                        - the team of subagents
+│   │   ├── reviewer.md                - review pass 1 of 2: attacks the logic
+│   │   ├── security-reviewer.md       - review pass 2 of 2: security holes only
+│   │   ├── researcher.md              - checks facts against live sources before they get written
+│   │   └── ux-reviewer.md             - walks a UI change as a first-time user
+│   ├── hooks/
+│   │   └── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
+│   └── skills/                        - named routines you trigger by typing their name
+│       ├── start/SKILL.md             - /start: load context before acting
+│       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
+│       └── save/SKILL.md              - /save: write down what happened for the next session
+├── .agents                            - a symlink to .claude, so other agent tools find the same config
+├── .github/
+│   ├── workflows/ci.yml               - CI: typecheck, lint, test, build and audit on every pull request
+│   └── pull_request_template.md       - what a pull request here must say
+├── docs/
+│   └── LAB.md                         - the hands-on lab: build a real app on this template, stage by stage
+├── src/                               - the application (today: a one-page placeholder to delete)
+│   ├── main.tsx
+│   ├── ui/App.tsx
+│   └── styles.css
+├── tests/                             - one placeholder test per harness, named as something to delete
+│   ├── placeholder.test.ts            - unit (Vitest)
+│   └── placeholder.browser.test.ts    - browser (Playwright)
+├── index.html, vite.config.ts         - Vite app shell
+├── tsconfig*.json, eslint.config.js   - TypeScript strict + ESLint, zero warnings allowed
+├── playwright.config.ts               - browser test setup
+├── package.json, package-lock.json    - scripts and pinned dependencies
+├── .nvmrc                             - the Node version, picked up by nvm automatically
+└── .gitignore                         - what never gets committed (.env files above all)
 ```
 
-A few words that are worth defining once:
+Three words worth defining once:
 
-- **Agent** - the AI tool doing the typing (Claude Code, Codex, or similar). You
-  talk to it in plain language; it reads and writes the files above.
-- **AGENTS.md** - the file an agent is expected to read first, every time. It is
-  short on purpose, and points to `rules/` for anything longer.
-- **A skill** (in `.claude/skills/`) - a named routine you trigger by typing its
-  name, like `/start`. It is a script written in plain English for the agent to
-  follow, not a program.
-- **CI** (Continuous Integration, in `.github/workflows/`) - a robot that repeats
-  the same checks on every change, so nobody has to remember to run them by hand.
+- **Agent** - the AI tool doing the typing (Claude Code, Codex CLI, or similar).
+  You talk to it in plain language; it reads and writes the files above.
+- **Skill** - a routine in `.claude/skills/` you trigger by typing its name, like
+  `/start`. It is instructions in plain English for the agent, not a program.
+- **CI** (Continuous Integration) - a robot on GitHub that repeats the same checks
+  on every change, so nobody has to remember to run them by hand.
 
-## How to start
+## Requirements
 
-You need [Node.js](https://nodejs.org) 22.12 or newer. If you use `nvm` (a tool for
-switching Node versions), run `nvm use` in this folder and it picks the right one
-automatically, from `.nvmrc`.
+- [Node.js](https://nodejs.org) 22.12 or newer. With `nvm`, run `nvm use` in this
+  folder and it picks the right version from `.nvmrc`.
+- An AI coding agent CLI: [Claude Code](https://code.claude.com), Codex CLI, or
+  similar. The template is written for any of them; the hooks run in Claude Code.
+- A [GitHub](https://github.com) account, for your fork and for CI.
 
-1. Clone this repository, then move into the folder it created:
+## How to use it, step by step
+
+1. **Fork this repository on GitHub** (the Fork button, top right). The fork is
+   yours: you can push to it, its CI runs for you, and this template stays clean.
+2. **Clone your own fork**, not this repository:
    ```bash
-   git clone <this repository's URL>
+   git clone <your-fork's-URL>
    cd <repository-folder-name>
    ```
-2. Install its dependencies (the libraries the toolchain needs - a one-time step,
-   or whenever they change):
+3. **Install the toolchain's dependencies** (one time, or when they change):
    ```bash
    npm ci
    ```
-3. Open the folder in your AI coding agent.
-4. Type `/start`.
+4. **Open the folder in your AI coding agent.**
+5. **Type `/start`.** It reads `AGENTS.md`, checks that the project still runs,
+   and reports what it found instead of guessing.
+6. **Work.** Tell the agent in your own words what you want to build. It will
+   interview you before writing code (`/grill-me` forces this when it does not
+   happen on its own). Work lands on a branch, gets reviewed (next section), and
+   merges through a pull request. `docs/LAB.md` is a guided first project if you
+   want one.
 
-That last command is the whole trick. It reads `AGENTS.md`, checks that the project
-still runs, and reports back what it found instead of guessing. From there, tell it
-in your own words what you want to build - it will interview you before writing any
-code.
+After the first project, your fork **is** your template: for the next idea,
+clone it into a new folder and start again at step 3 (or tick "Template
+repository" in your fork's GitHub settings, which adds a "Use this template"
+button). The rules, agents and checks come with it; `src/` and `tests/` are
+placeholders you replace.
+
+## The two review passes
+
+Nothing merges here on the word of the mind that wrote it. Before a pull request
+merges, the change gets **two review passes**, each by a reviewer that did not
+write the code:
+
+1. **Logic** - does the change do the right thing, and what did the author not
+   think to check.
+2. **Security** - only holes: user input reaching a request or the page
+   unescaped, a secret in code or config, data sent where the user did not ask,
+   a public endpoint a stranger could abuse.
+
+Who runs them depends on what you have:
+
+- **If you have a second, independent tool** (for example Codex CLI alongside
+  Claude Code), let it run a pass. A different model has different blind spots
+  than the model that wrote the code - that independence is the value.
+- **If you do not**, use the agents shipped here: open a fresh agent session on
+  the branch and run `.claude/agents/reviewer.md`, then
+  `.claude/agents/security-reviewer.md`. A fresh session did not write the change
+  and does not inherit the author's assumptions.
+
+Both passes return **SHIP** or **NO-SHIP** with findings. NO-SHIP findings go
+back to the author; the reviewer re-reads the fix. Two more agents help but gate
+nothing: `researcher.md` checks a fact against the live source before it gets
+written down, and `ux-reviewer.md` walks a UI change as a person seeing the
+screen for the first time.
+
+## What is enforced, and what is convention
+
+An instruction file is context, not a mechanism - an agent can drift past it.
+Honesty about which rules have teeth:
+
+| Rule | What actually holds it | Honest label |
+| --- | --- | --- |
+| No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
+| Two review passes before push | A hook prints a reminder on `git push` | **Reminds only.** It never blocks. Skipping review is a choice you make, not something the tooling prevents. |
+| `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
+| Load context before acting | SessionStart hook prints "run /start first" | **Reminds only.** |
+| Everything else in `AGENTS.md` and `rules/` | The agent reading it | **Convention.** It binds by being read, which is why `AGENTS.md` is short. |
 
 ## The finished example
 
-This repository has a second branch, `example`, which was never stripped down. It
-holds a small, complete application - a phishing-report triage queue - built through
-this exact same workflow from start to finish. Look there to see what a finished
-change, reviewed and passing every check, actually looks like:
+The `example` branch was never stripped down. It holds a small, complete
+application - a phishing-report triage queue - built through this exact workflow
+from start to finish. Look there to see what a finished change, reviewed and
+passing every check, actually looks like:
 
 ```bash
 git switch example
 npm run verify
 ```
+
+## License
+
+[MIT](LICENSE). Use it, fork it, teach with it.

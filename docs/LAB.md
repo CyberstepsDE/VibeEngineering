@@ -169,16 +169,18 @@ The change is committed on a branch. Nothing ships until an agent that did not
 write it says SHIP.
 
 **Ask the agent:** nothing - this stage belongs to a SECOND agent. Open a fresh
-agent session, point it at the branch, and run the reviewer
-(`.claude/agents/reviewer.md` - read-only tools, no editing). It reads
-`git diff main...HEAD`, then every changed file in full, and runs `npm run verify`
-itself - believing its own run, not the builder's report. It returns SHIP or
-NO-SHIP, findings worst first, each carrying the concrete sequence that triggers
-it.
+agent session, point it at the branch, and run the two review passes from
+AGENTS.md section 3: first the logic reviewer
+(`.claude/agents/reviewer.md` - read-only tools, no editing), then the security
+pass (`.claude/agents/security-reviewer.md`, or Codex if you have it). The logic
+reviewer reads `git diff main...HEAD`, then every changed file in full, and runs
+`npm run verify` itself - believing its own run, not the builder's report. Each
+pass returns SHIP or NO-SHIP, findings worst first, each carrying the concrete
+sequence that triggers it.
 
-**Done looks like:** an agent that did not write the change has said SHIP, on its
-own run of the checks. NO-SHIP findings go back to the first agent to fix; the
-reviewer reads the result again. Only then do you deploy.
+**Done looks like:** both passes have said SHIP, on their own run of the checks,
+from a mind that did not write the change. NO-SHIP findings go back to the first
+agent to fix; the reviewer reads the result again. Only then do you deploy.
 
 **If it drags:** if the reviewer answers SHIP immediately, read its "what I
 tried" list - a review that names its attack paths teaches more than a bare

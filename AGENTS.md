@@ -62,10 +62,27 @@ write a new one that supersedes it. Never silently re-decide.
   exit 2 blocks); every other tool relies on you reading this line.
 - Run the full check before every commit: `npm run verify`. All of it green, no
   exceptions, and never remove a check to make it pass.
-- Open a pull request. Get it reviewed by someone - or something - that did not write
-  it. An author checks whether the code does what they intended; a reviewer checks
-  whether the intention was right. One person does not ask both questions at once.
-  This repository ships one such reviewer: `.claude/agents/reviewer.md`.
+- Open a pull request. Before it merges, the change gets **TWO review passes**, each
+  by a mind that did not write it. An author checks whether the code does what they
+  intended; a reviewer checks whether the intention was right. One mind does not ask
+  both questions at once.
+  1. **Logic pass** - does it do the right thing, and what did the author not think
+     to check.
+  2. **Security pass** - only holes: input reaching a request or the page unescaped,
+     a secret in code or config, data sent where the user did not ask, a public
+     endpoint a stranger could abuse.
+
+  If you have a second, independent tool (Codex CLI, for example), let it run a
+  pass - a different model has different blind spots than the one that wrote the
+  code. If you do not, use the agents this repository ships:
+  `.claude/agents/reviewer.md` (logic) and `.claude/agents/security-reviewer.md`
+  (security). Honesty about what holds this: it is a convention, enforced by
+  reading this file plus a reminder hook on `git push` - not a hard block. A push
+  without review is a choice, not an accident.
+- Two more agents are helpers, not gates: `.claude/agents/researcher.md` checks a
+  fact against the live source before it gets written down, and
+  `.claude/agents/ux-reviewer.md` walks a UI change as a person seeing the screen
+  for the first time.
 - Merge, then verify the running result, not the pipeline's opinion of it.
 
 **A green pipeline proves the assertions somebody wrote. It says nothing about the
