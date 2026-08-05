@@ -5,17 +5,23 @@
 A lab guide anyone can follow: solo at home, in a group, or in a class with one
 person driving on a shared screen. You start from an empty folder. Stage 0 mints
 your own repository and proves a living deploy pipeline **before any code
-exists**; stages 1 to 9 build the app on top of it.
+exists**; stages 1 to 7 build the app on top of it.
+
+**How this file relates to the deck:** the slides are the frame - the route map,
+the watch-list, the traps. This file is the full step-by-step reference route:
+every stage, every request word for word, every "done looks like". When a live
+session wanders - and it should - this file is where you find the way back.
 
 **The goal, stated once:** a page where you type a domain name and see two
 things: whether its email can be spoofed - SPF, DMARC, DKIM - and whether its
 website sends the security headers browsers respect. Two checks, one page, no
-accounts, no stored data. Both halves are part of the goal from the start:
-stage 4 builds the first, stage 6 the second.
+accounts, no stored data. Both halves are part of the goal from the start: both
+are built inside stage 4 - part one directly, part two after a wall.
 
-Stage 0 plus the nine stages below are the shape of the session, not a script to
-read aloud. Follow them in order; the words inside each "ask the agent" line are
-a starting point, not a transcript.
+Stage 0 plus the seven stages below are the shape of the session, not a script
+to read aloud. Follow them in order; the words inside each "ask the agent" line
+are a starting point, not a transcript - and from stage 4 on, the build is a
+conversation: the agent's own noticing steers the order of the small pieces.
 
 **The standing rule, from stage 0 step 4 onward:** every push builds a preview;
 a merge to `main` builds production. Every build stage therefore ends the same
@@ -138,9 +144,9 @@ domain name and see two things: whether its email can be spoofed (SPF, DMARC,
 DKIM) and whether its website sends the security headers browsers respect. No
 accounts, nothing stored.
 
-This sentence is the scope: stage 4 builds the first half, stage 6 the second.
-When "security headers" returns later, it is this sentence being executed - not
-new work appearing.
+This sentence is the scope: both halves are built inside stage 4 - part one
+first, part two after the wall. When "security headers" returns later, it is
+this sentence being executed - not new work appearing.
 
 **Done looks like:** the agent has repeated the goal back with both halves
 intact and has not written any code.
@@ -181,13 +187,45 @@ real application once it exists.
 
 **Done looks like:** a short, readable plan exists (in the chat or a file) that
 names both parts and the push-after-every-stage rule, and you have said "yes,
-build part one" before any source file changes. The later stages execute this
-plan - stage 4 is part one, stage 6 is part two; nothing new appears mid-build.
+build part one" before any source file changes. Stage 4 executes this plan in
+order - part one, then part two; nothing new appears mid-build.
 
 **If it drags:** accept a plan stated out loud instead of written to a file, and
 move on - the point is that a plan existed and was agreed to, not its format.
 
-## Stage 4: build part one of the plan - the email checks (SPF, DMARC, DKIM)
+## Stage 4: the build - a conversation
+
+From here there is no script. The agent builds; what it notices, what it grills
+you about, what it wants to improve first - no two live builds run the same, and
+this guide stops pretending otherwise. Two things replace the script:
+
+**The rhythm.** One small piece at a time: you ask in plain words, the agent
+builds, commit and push, the preview rebuilds, you look. Around again until both
+halves of the goal are live.
+
+**The watch-list.** Seven catches worth holding in view the whole time:
+
+1. **The DKIM verdict** - no fixed selector exists, so a missed guess proves
+   nothing: demand "not detected", never "fail".
+2. **Strange inputs** - a typo, an empty field, a domain that does not exist, a
+   whole URL pasted in: fly each by hand on the preview after every piece.
+3. **The wall** - at the headers half the browser will refuse to hand your
+   script a stranger's response. By design, not a bug: the fix is a small
+   serverless function in `api/` - the agent proposes it, or you request it.
+4. **A fix without a test** - the template ships no DOM test harness on
+   purpose: have every fix pinned, and watch the agent install the missing
+   harness itself - a task, not an oversight.
+5. **What failure looks like** - agents polish the happy path and skip the sad
+   one: break it on purpose and read what a stranger would see.
+6. **A long silence, no push** - work you cannot see: commit and push after
+   every piece; the preview is your window.
+7. **A word you do not know** - jargon, and decisions made in passing: a
+   one-sentence explanation before moving on.
+
+The parts below are the reference route through that conversation - the detail
+the slides deliberately do not carry.
+
+### Part one: the email checks (SPF, DMARC, DKIM)
 
 Build the part that needs no server at all - a browser can ask the internet's
 phone book directly.
@@ -217,11 +255,13 @@ shareable address.
 a single hardcoded domain, printed raw to the page - before generalizing to a
 form and all three records.
 
-## Stage 5: the landing - you take the controls
+### The landing: you take the controls
 
 The arc from the deck's opening, kept on purpose: setup was takeoff, the agent
 flew the build - **the landing is a human's**. Close the terminal: open the
 preview like a person who just got the link, and work the checklist by hand.
+Run it in full after part one, and rerun it after every later piece - landings
+repeat.
 
 The tester's checklist - five inputs, and what an honest page does with each:
 
@@ -262,7 +302,7 @@ finds the gap between "the happy path works" and "the code handles reality". If
 time is short, the self-configuration beat can shrink to the install-and-config
 step with the test left for later.
 
-## Stage 6: part two of the plan - the wall, then the smallest backend
+### Part two: the wall, then the smallest backend
 
 Part two of the plan, asked the obvious way - and it is worth hitting the wall
 for real.
@@ -309,7 +349,27 @@ real header results (serverless functions run on the preview too).
 directly, read the raw JSON back) before wiring the page to it - that separates
 "does the function work" from "does the page call it correctly".
 
-## Stage 7: review before the merge - two passes attack the branch
+### Make it yours: prompts to keep going
+
+Both halves work. From here, extension is one prompt away - each of these is a
+complete brief in plain words, and each rides the same road: branch -> push ->
+preview -> review -> merge.
+
+A nicer face:
+
+- "Make the report easy to read at a glance: green, amber or red per check, a
+  one-line explanation for each, mobile first."
+- "Add a small header with the app name and one line saying what this checks."
+- "Let each check expand to show the raw record behind the verdict."
+
+More powers:
+
+- "Add a button that copies the whole report as plain text."
+- "Let me check several domains at once - one per line."
+- "Remember the last five domains I checked - in the browser only, no server
+  storage."
+
+## Stage 5: review before the merge - two passes attack the branch
 
 The branch is pushed and its preview works. Nothing MERGES until minds that did
 not write the change say SHIP - both of them.
@@ -335,7 +395,7 @@ list - a review that names its attack paths teaches more than a bare pass. If
 time is short, fix only the findings that carry an executable sequence and keep
 the rest as notes.
 
-## Stage 8: merge - two SHIPs, two green robot checks, and production builds itself
+## Stage 6: merge - two SHIPs, two green robot checks, and production builds itself
 
 Two different gates guard `main` - minds, and a robot - and the pull request
 page is where both show.
@@ -343,7 +403,7 @@ page is where both show.
 **Ask the agent:** nothing - this stage is yours. Open the pull request page and
 take stock:
 
-- The **review passes** (stage 7) were minds reading the change - and they ran
+- The **review passes** (stage 5) were minds reading the change - and they ran
   on your machine. They are deliberately NOT in CI: there they would need model
   API keys, so this repository keeps review local, and the push-time hook only
   reminds you it exists.
@@ -361,7 +421,7 @@ address - both checks, live. The app working in your hand is the proof, not a
 **If it drags:** a red check on the pull request names the command that failed -
 run the same command locally, fix, push; the check re-runs on the new commit.
 
-## Stage 9: secure it
+## Stage 7: secure it
 
 You just built a tool that judges other sites' security headers. What does it
 say about your own?
