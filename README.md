@@ -25,9 +25,10 @@ Every tracked file, and why it is there:
 │   ├── critical-thinking.md           - trust nothing until checked, your own conclusions included
 │   ├── coding-standards.md            - shape of the code: one module, one job, one home per rule
 │   ├── secrets.md                     - nothing secret ever touches version control
+│   ├── review-calibration.md          - what a review finding is worth, and how to decline one
 │   └── what-checks-prove.md           - what a green check does and does not tell you
 ├── .claude/
-│   ├── settings.json                  - hook wiring: session reminder, commit guard, push reminder
+│   ├── settings.json                  - hook wiring: session reminder, commit guard
 │   ├── agents/                        - the team of subagents
 │   │   ├── reviewer.md                - review pass 1 of 2: attacks the logic
 │   │   ├── security-reviewer.md       - review pass 2 of 2: security holes only
@@ -38,10 +39,18 @@ Every tracked file, and why it is there:
 │   └── skills/                        - named routines you trigger by typing their name
 │       ├── start/SKILL.md             - /start: load context before acting
 │       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
+│       ├── review/SKILL.md            - /review: the two review passes on the committed branch
 │       └── save/SKILL.md              - /save: write down what happened for the next session
 ├── .agents                            - a symlink to .claude, so other agent tools find the same config
+├── .githooks/                         - git hooks for every tool and person, enabled by npm ci in a git checkout
+│   ├── pre-commit                     - scans staged changes for secrets (when gitleaks is installed)
+│   └── pre-push                       - refuses a push to main or a red clean checkout; warns when unreviewed
+├── scripts/
+│   ├── review.sh                      - runs both review passes on the other tool, records the verdicts
+│   ├── check-reviews.sh               - does this commit carry two SHIP verdicts
+│   └── read-review-verdict.sh         - reads one verdict, strictly
 ├── .github/
-│   ├── workflows/ci.yml               - CI: typecheck, lint, test, build and audit on every pull request
+│   ├── workflows/ci.yml               - CI: typecheck, lint, test, build, audit and a secret scan on every pull request
 │   └── pull_request_template.md       - what a pull request here must say
 ├── docs/
 │   └── LAB.md                         - the hands-on lab: build a real app on this template, stage by stage
@@ -52,7 +61,7 @@ Every tracked file, and why it is there:
 ├── tests/                             - one placeholder test per harness, named as something to delete
 │   ├── placeholder.test.ts            - unit (Vitest)
 │   ├── placeholder.browser.test.ts    - browser (Playwright)
-│   └── hooks/no-main-commit.test.ts   - fixtures for the commit guard; keep them
+│   └── hooks/                         - fixtures for the commit guard, the push hook and the verdict reader; keep them
 ├── index.html, vite.config.ts         - Vite app shell
 ├── tsconfig*.json, eslint.config.js   - TypeScript strict + ESLint, zero warnings allowed
 ├── playwright.config.ts               - browser test setup
@@ -74,8 +83,13 @@ Three words worth defining once:
 
 - [Node.js](https://nodejs.org) 22.12 or newer. With `nvm`, run `nvm use` in this
   folder and it picks the right version from `.nvmrc`.
-- An AI coding agent CLI: [Claude Code](https://code.claude.com), Codex CLI, or
-  similar. The template is written for any of them; the hooks run in Claude Code.
+- An AI coding agent: [Claude Code](https://code.claude.com), Codex CLI, or
+  similar. The template is written for any of them. Having BOTH Claude Code and
+  Codex makes the review independent (one writes, the other reviews).
+- `jq`, used by the review script (`brew install jq`; preinstalled on recent macOS).
+- Recommended: [gitleaks](https://github.com/gitleaks/gitleaks), so a secret is
+  caught on your machine before it is pushed (`brew install gitleaks`). Without it
+  the commit hook warns and CI still scans.
 - A [GitHub](https://github.com) account, for your own copy and for CI.
 
 ## How to use it, step by step
@@ -92,7 +106,8 @@ Three words worth defining once:
    git clone <your-repository's-URL>
    cd <repository-folder-name>
    ```
-3. **Install the toolchain's dependencies** (one time, or when they change):
+3. **Install the toolchain's dependencies** (one time, or when they change).
+   This also switches on the git hooks in `.githooks/`:
    ```bash
    npm ci
    ```
@@ -122,15 +137,26 @@ write the code:
    unescaped, a secret in code or config, data sent where the user did not ask,
    a public endpoint a stranger could abuse.
 
-Who runs them depends on what you have:
+Run them with `/review` (the script `scripts/review.sh`), after committing and
+before merging:
 
-- **If you have a second, independent tool** (for example Codex CLI alongside
-  Claude Code), let it run a pass. A different model has different blind spots
-  than the model that wrote the code - that independence is the value.
-- **If you do not**, use the agents shipped here: open a fresh agent session on
-  the branch and run `.claude/agents/reviewer.md`, then
-  `.claude/agents/security-reviewer.md`. A fresh session did not write the change
-  and does not inherit the author's assumptions.
+- **With both Claude Code and Codex**, the logic pass runs on the tool that did
+  NOT write the change and the security pass runs on Codex (on Claude when Codex
+  wrote it). A different model has
+  different blind spots than the model that wrote the code - that independence is
+  the value.
+- **With only one tool**, both passes run on it. The record says `same-tool`
+  when that tool also wrote the change, and `independent` when the author is
+  `other` (a person or another agent), since neither pass ran on the author.
+  With no CLI at all, open a fresh agent session on the branch and run
+  `.claude/agents/reviewer.md`, then `.claude/agents/security-reviewer.md`.
+
+The verdicts are stored for the exact commit, outside the repository files; a new
+commit needs a new review. The script runs the branch's own checks on your machine,
+so it is for your own work and your agents' work. A pull request from somebody you
+do not trust is read on GitHub and checked by CI, never checked out locally: with
+this repository's git hooks switched on, merely switching to a branch runs any
+hook it carries.
 
 Both passes return **SHIP** or **NO-SHIP** with findings. NO-SHIP findings go
 back to the author; the reviewer re-reads the fix. Two more agents help but gate
@@ -146,7 +172,10 @@ Honesty about which rules have teeth:
 | Rule | What actually holds it | Honest label |
 | --- | --- | --- |
 | No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
-| Two review passes before push | A hook prints a reminder on `git push` | **Reminds only.** It never blocks. Skipping review is a choice you make, not something the tooling prevents. |
+| No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks (in a git checkout; a ZIP download has no git and no hooks). `git push --no-verify` skips it. |
+| `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. When the pushed commit is another branch or the tree has uncommitted or untracked files, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
+| No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns, and `git commit --no-verify` skips it. CI scans the whole history on every pull request - but a secret that reached GitHub is already exposed and must be replaced. |
+| Two review passes before merge | `scripts/review.sh` records verdicts; `.githooks/pre-push` checks them | **Warns only.** It never blocks. Merging unreviewed work is a choice you make, not something the tooling prevents. |
 | `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
 | Load context before acting | SessionStart hook prints "run /start first" | **Reminds only.** |
 | Everything else in `AGENTS.md` and `rules/` | The agent reading it | **Convention.** It binds by being read, which is why `AGENTS.md` is short. |

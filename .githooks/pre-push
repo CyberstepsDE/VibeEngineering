@@ -1,0 +1,66 @@
+#!/bin/sh
+# Git pre-push hook (enabled by `npm install` / `npm ci`, see package.json
+# "prepare"). Runs for every tool and every person, not only Claude Code.
+#
+# 1. Refuses a push to main: work reaches main through a pull request.
+# 2. Runs `npm run verify` on the commit being pushed and refuses on failure,
+#    when that commit is the clean checkout (HEAD, nothing uncommitted or
+#    untracked). Otherwise the local tree is not that commit, so it prints
+#    NOT VERIFIED and lets the push through; CI checks it on GitHub.
+# 3. WARNS (never refuses) when that commit has no two-SHIP review from
+#    scripts/review.sh. Pushing a draft is fine; merging it unreviewed is the
+#    choice this warning makes visible.
+#
+# `git push --no-verify` skips all of it. That is a decision, not an accident.
+
+refuse_main=0
+pushed_shas=""
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main) refuse_main=1 ;;
+  esac
+  case "$local_sha" in
+    0000000000000000000000000000000000000000) ;;
+    *) pushed_shas="$pushed_shas $local_sha" ;;
+  esac
+done
+
+if [ "$refuse_main" = 1 ]; then
+  echo "BLOCKED: pushing to main. Push a branch and open a pull request instead (AGENTS.md section 3)." >&2
+  exit 1
+fi
+
+[ -n "$pushed_shas" ] || exit 0
+
+head_sha=$(git rev-parse HEAD)
+# Untracked files count: a new file the commit imports but nobody added makes
+# verify pass here and fail everywhere else.
+dirty=$(git status --porcelain)
+for sha in $pushed_shas; do
+  if [ "$sha" != "$head_sha" ] || [ -n "$dirty" ]; then
+    echo "NOT VERIFIED: the pushed commit $sha is not the clean checkout here, so npm run verify cannot speak for it." >&2
+  else
+    echo "pre-push: npm run verify on $sha ..." >&2
+    # Git exports GIT_DIR and friends into hooks, and they outrank `git -C`: a
+    # test that shells out to git would otherwise act on THIS repository. The
+    # gate runs as it would in a plain terminal.
+    (
+      for name in $(env | sed -n 's/^\(GIT_[A-Za-z0-9_]*\)=.*/\1/p'); do unset "$name"; done
+      npm run verify >/dev/null 2>&1
+    ) || {
+      echo "BLOCKED: npm run verify failed on $sha. Run it to see why, fix, commit, push again." >&2
+      exit 1
+    }
+  fi
+  if [ -x scripts/check-reviews.sh ]; then
+    if ! report=$(scripts/check-reviews.sh "$sha"); then
+      echo "" >&2
+      echo "  ################################################################" >&2
+      echo "  #  UNREVIEWED: $report" >&2
+      echo "  #  Merging needs two SHIP passes. Run /review before the merge." >&2
+      echo "  ################################################################" >&2
+      echo "" >&2
+    fi
+  fi
+done
+exit 0

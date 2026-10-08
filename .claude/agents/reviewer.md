@@ -24,11 +24,16 @@ whether the intention was right and what they did not think to check.
    dedicated second pass (`security-reviewer`) - but if you trip over something
    security-shaped on the way, report it anyway rather than assuming the other
    pass will find it.
-3. Run `npm run verify` and believe your own run, not the author's report of it.
+3. Believe a real run of `npm run verify`, never the author's report of it. Through
+   `/review` (`scripts/review.sh`) the script has already run it on this exact commit
+   before you start, and you stay read-only; when you are called directly, run it
+   yourself.
 
 ## What you report
 
-A verdict: **SHIP** or **NO-SHIP**, then the findings, worst first. Every finding
+The findings, worst first, then the verdict as the LAST line, exactly
+`VERDICT: SHIP` or `VERDICT: NO-SHIP` and nothing after it (`scripts/review.sh`
+reads only that line; any other shape counts as no review). Every finding
 carries the concrete sequence that triggers it - file, line, input, what happens.
 **A finding without a sequence a real user could execute is a note, not a blocker.**
 If you found nothing, say what you tried and what you would attack next with more
