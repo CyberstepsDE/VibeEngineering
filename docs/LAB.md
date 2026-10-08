@@ -378,8 +378,8 @@ not write the change say SHIP - both of them.
 
 **Ask the agent:** "run /review". It runs the two passes from `AGENTS.md`
 section 3 on the committed branch: the logic pass on the tool that did NOT write
-the change (Codex, when Claude wrote it), the security pass on Codex - a
-different model has different blind spots. Each pass follows its agent file
+the change (Codex, when Claude wrote it), the security pass on Codex (on Claude
+when Codex wrote it) - a different model has different blind spots. Each pass follows its agent file
 (`.claude/agents/reviewer.md`, `.claude/agents/security-reviewer.md`), reads the
 exact diff and the changed files in full, and returns its findings, worst first,
 each carrying the concrete sequence that triggers it, then SHIP or NO-SHIP. The
