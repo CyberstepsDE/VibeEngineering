@@ -3,7 +3,7 @@
 // The verdict reader decides whether a review said SHIP. A loose reading turns
 // a NO-SHIP into a pass, so each way a transcript can mislead is pinned here.
 
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -47,7 +47,39 @@ describe('read-review-verdict.sh', () => {
   })
 })
 
+// Git exports GIT_DIR into hooks; the throwaway repository below must never be
+// confused with the real one.
+const ENV: NodeJS.ProcessEnv = { ...process.env }
+for (const name of Object.keys(ENV)) {
+  if (name.startsWith('GIT_')) delete ENV[name]
+}
+ENV.GIT_CONFIG_GLOBAL = '/dev/null'
+ENV.GIT_CONFIG_NOSYSTEM = '1'
+
 describe('.githooks/pre-push', () => {
+  it('does not vouch for a commit while an untracked file sits beside it', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'pre-push-'))
+    temps.push(dir)
+    const git = (...args: string[]) =>
+      execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8', env: ENV }).trim()
+    git('init', '--quiet', '--initial-branch', 'feature')
+    git('config', 'user.email', 'test@example.com')
+    git('config', 'user.name', 'test')
+    git('commit', '--quiet', '--allow-empty', '-m', 'root')
+    writeFileSync(join(dir, 'helper.ts'), 'export const forgotten = true\n')
+    const sha = git('rev-parse', 'HEAD')
+
+    const run = spawnSync('sh', [PRE_PUSH, 'origin', 'url'], {
+      cwd: dir,
+      env: ENV,
+      input: `refs/heads/feature ${sha} refs/heads/feature ${'0'.repeat(40)}\n`,
+      encoding: 'utf8',
+    })
+
+    expect(run.status).toBe(0)
+    expect(run.stderr).toContain('NOT VERIFIED')
+  })
+
   it('refuses a push to main and names the way forward', () => {
     const sha = 'a'.repeat(40)
     let status = 0

@@ -31,7 +31,9 @@ fi
 [ -n "$pushed_shas" ] || exit 0
 
 head_sha=$(git rev-parse HEAD)
-dirty=$(git status --porcelain --untracked-files=no)
+# Untracked files count: a new file the commit imports but nobody added makes
+# verify pass here and fail everywhere else.
+dirty=$(git status --porcelain)
 for sha in $pushed_shas; do
   if [ "$sha" != "$head_sha" ] || [ -n "$dirty" ]; then
     echo "NOT VERIFIED: the pushed commit $sha is not the clean checkout here, so npm run verify cannot speak for it." >&2

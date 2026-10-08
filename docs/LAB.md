@@ -113,8 +113,9 @@ preview address."
 
 Watch the road, in order:
 
-1. The commit lands on a **branch** - a commit on `main` is refused by the
-   template's hook, which you may even see happen.
+1. The commit lands on a **branch** - in Claude Code a commit on `main` is
+   refused by the template's hook, which you may even see happen; with any tool,
+   a push to `main` is refused by `.githooks/pre-push`.
 2. The **push** makes Vercel build a **preview**: a shareable address just for
    this branch. Open it - the new title is live.
 3. The **pull request** makes CI run `npm run verify` on GitHub's machines -

@@ -2,9 +2,10 @@
 # The two review passes from AGENTS.md section 3, run by a mind that did not
 # write the change, on the exact commit you are about to push.
 #
-#   scripts/review.sh <claude|codex> <base-ref> "<user outcome>"
+#   scripts/review.sh <claude|codex|other> <base-ref> "<user outcome>"
 #
-# <claude|codex> is the tool that WROTE the change. The logic pass runs on the
+# The first argument names who WROTE the change (`other` for another agent or a
+# person). The logic pass runs on the
 # other one (a different model has different blind spots); the security pass
 # runs on Codex. When the other tool is not installed, both passes fall back to
 # the one you have, and the record says so: a same-tool review is better than
@@ -22,14 +23,16 @@
 # reviewer into a named failure instead of silence.
 set -eu
 
-usage='Usage: scripts/review.sh <claude|codex> <base-ref> "<user outcome>"'
+usage='Usage: scripts/review.sh <claude|codex|other> <base-ref> "<user outcome>"'
 author=${1:?$usage}
 base_ref=${2:?$usage}
 outcome=${3:?$usage}
 
+# Any author other than claude or codex (another agent, a person) is reviewed
+# like a Claude-written change: logic and security on Codex when it is there.
 case "$author" in
   claude | codex) ;;
-  *) echo "The author must be claude or codex." >&2; exit 1 ;;
+  *) author=other ;;
 esac
 command -v jq >/dev/null 2>&1 || { echo "BLOCKED: jq is required (brew install jq, or apt install jq)." >&2; exit 1; }
 

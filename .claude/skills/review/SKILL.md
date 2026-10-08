@@ -25,7 +25,8 @@ Nothing merges on the word of the mind that wrote it. This runs both passes from
 scripts/review.sh <claude|codex> origin/main "<the outcome sentence>"
 ```
 
-The first argument names the tool that WROTE the change. The script:
+The first argument names who WROTE the change: `claude`, `codex`, or `other`
+for another agent or a person. The script:
 
 1. runs `npm run verify` on this commit and stops if it fails;
 2. runs the logic pass on the OTHER tool and the security pass on Codex, each
