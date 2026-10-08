@@ -16,9 +16,10 @@ const HOOK = join(process.cwd(), '.claude/hooks/no-main-commit.sh')
 const temps: string[] = []
 
 // Git exports GIT_DIR and friends into the hooks it runs, and they outrank
-// `git -C <dir>`. These tests run inside `.githooks/pre-push` (through
-// `npm run verify`), so without this every throwaway commit below would land in
-// the REAL repository, and its config would get the test identity.
+// `git -C <dir>`. When these tests run inside a git hook (a pre-push gate that
+// runs `npm run verify`, for example), every throwaway commit below would
+// otherwise land in the REAL repository, and its config would get the test
+// identity.
 const ENV: NodeJS.ProcessEnv = { ...process.env }
 for (const name of Object.keys(ENV)) {
   if (name.startsWith('GIT_')) delete ENV[name]
@@ -188,6 +189,8 @@ describe('no-main-commit hook', () => {
       expect(runHook('git log --oneline --grep=commit -5', dir)).toBe(0)
       expect(runHook('git rev-parse HEAD^{commit}', dir)).toBe(0)
       expect(runHook('git diff -- commit-notes.md', dir)).toBe(0)
+      expect(runHook('git --help commit', dir)).toBe(0)
+      expect(runHook('git --exec-path commit', dir)).toBe(0)
     })
 
     it('fails open on a payload that is not JSON', () => {

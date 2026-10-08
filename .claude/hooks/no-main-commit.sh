@@ -59,6 +59,8 @@ is_commit_invocation() {
   local i=1
   while [ "$i" -lt "$n" ]; do
     case "${tokens[$i]}" in
+      # These print something and exit: `git --help commit` is not a commit.
+      -h | --help | -v | --version | --exec-path | --html-path | --man-path | --info-path) return 1 ;;
       -C | -c | --git-dir | --work-tree | --namespace) i=$((i + 2)) ;;
       -*) i=$((i + 1)) ;;
       *) break ;;
