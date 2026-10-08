@@ -65,10 +65,8 @@ if ! npm run verify > "$evidence/gate.txt" 2>&1; then
 fi
 
 deadline=${REVIEW_DEADLINE_SECONDS:-2400}
-# Reviewers get no standard input: the codex CLI reads stdin when it is not a
-# terminal, and a background run that inherits an open stdin can wait forever.
 run_with_deadline() {
-  "$@" < /dev/null &
+  "$@" &
   pid=$!
   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null ) &
   watchdog=$!
@@ -84,12 +82,12 @@ run_pass() {
   if [ "$tool" = codex ]; then
     set -- codex exec --ephemeral --sandbox read-only --json
     [ -n "${REVIEW_CODEX_MODEL:-}" ] && set -- "$@" --model "$REVIEW_CODEX_MODEL"
-    run_with_deadline env -u OPENAI_API_KEY "$@" "$prompt" > "$out.raw" 2>/dev/null || return 1
+    run_with_deadline "$@" "$prompt" > "$out.raw" 2>/dev/null || return 1
     jq -r 'select(.type == "item.completed" and .item.type == "agent_message") | .item.text' "$out.raw" > "$out"
   else
     set -- claude -p --permission-mode plan --output-format json
     [ -n "${REVIEW_CLAUDE_MODEL:-}" ] && set -- "$@" --model "$REVIEW_CLAUDE_MODEL"
-    run_with_deadline env -u ANTHROPIC_API_KEY "$@" "$prompt" > "$out.raw" 2>/dev/null || return 1
+    run_with_deadline "$@" "$prompt" > "$out.raw" 2>/dev/null || return 1
     jq -r '.result // empty' "$out.raw" > "$out"
   fi
   rm -f "$out.raw"
