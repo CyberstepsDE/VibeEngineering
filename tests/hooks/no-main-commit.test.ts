@@ -197,6 +197,9 @@ describe('no-main-commit hook', () => {
       expect(runHook('git commit --dry-run -m x', dir)).toBe(0)
       expect(runHook('git commit --short', dir)).toBe(0)
       expect(runHook('git commit --porcelain', dir)).toBe(0)
+      expect(runHook('git commit --long', dir)).toBe(0)
+      expect(runHook('git commit -z', dir)).toBe(0)
+      expect(runHook('git commit --null', dir)).toBe(0)
     })
 
     it('fails open on a payload that is not JSON', () => {

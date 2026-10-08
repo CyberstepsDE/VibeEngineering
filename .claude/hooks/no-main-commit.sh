@@ -65,11 +65,13 @@ is_commit_invocation() {
     esac
   done
   [ "${tokens[$i]:-}" = "commit" ] || return 1
-  # A commit that only prints and writes nothing is not a commit either.
+  # A commit that only prints and writes nothing is not a commit either. The
+  # complete list from `git help commit`: --dry-run, and --short, --porcelain,
+  # --long and -z/--null, each of which implies it; plus -h and --help.
   local j=$((i + 1))
   while [ "$j" -lt "$n" ]; do
     case "${tokens[$j]}" in
-      -h | --help | --dry-run | --short | --porcelain) return 1 ;;
+      -h | --help | --dry-run | --short | --porcelain | --long | -z | --null) return 1 ;;
     esac
     j=$((j + 1))
   done
