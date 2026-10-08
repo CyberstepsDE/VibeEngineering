@@ -22,26 +22,34 @@ Every tracked file, and why it is there:
 ├── rules/                             - the detail behind AGENTS.md, one topic per file
 │   ├── less-is-more.md                - gate 1: not a single unnecessary character
 │   ├── facts-only.md                  - gate 2: no claim without a citation
-│   ├── critical-thinking.md           - trust nothing until checked, your own conclusions included
+│   ├── critical-thinking.md           - trust nothing until checked; the lenses every change is checked with
+│   ├── do-exactly-what-was-asked.md   - build what was asked; a doubt is a question, not an improvement
 │   ├── coding-standards.md            - shape of the code: one module, one job, one home per rule
 │   ├── secrets.md                     - nothing secret ever touches version control
 │   ├── review-calibration.md          - what a review finding is worth, and how to decline one
 │   └── what-checks-prove.md           - what a green check does and does not tell you
 ├── .claude/
-│   ├── settings.json                  - hook wiring: session reminder, commit guard
+│   ├── settings.json                  - hook wiring (session reminder, commit guard, critical-thinking reminder), force-push denied
 │   ├── agents/                        - the team of subagents
 │   │   ├── reviewer.md                - review pass 1 of 2: attacks the logic
 │   │   ├── security-reviewer.md       - review pass 2 of 2: security holes only
 │   │   ├── researcher.md              - checks facts against live sources before they get written
 │   │   └── ux-reviewer.md             - walks a UI change as a first-time user
 │   ├── hooks/
-│   │   └── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
+│   │   ├── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
+│   │   └── critical-thinking-reminder.sh - a short reminder on every message (Claude Code and Codex)
 │   └── skills/                        - named routines you trigger by typing their name
 │       ├── start/SKILL.md             - /start: load context before acting
 │       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
 │       ├── review/SKILL.md            - /review: the two review passes on the committed branch
-│       └── save/SKILL.md              - /save: write down what happened for the next session
+│       ├── save/SKILL.md              - /save: write down what happened for the next session
+│       ├── grill-with-docs/, grilling/ - interview that also records decisions and terms
+│       ├── codebase-design/           - vocabulary for designing deep modules
+│       ├── domain-modeling/           - glossary and decision records
+│       ├── improve-codebase-architecture/ - find modules worth deepening
+│       └── THIRD_PARTY.md             - the five skills above come from mattpocock/skills (MIT)
 ├── .agents                            - a symlink to .claude, so other agent tools find the same config
+├── .codex/hooks.json                  - the same critical-thinking reminder for Codex (trust it once with /hooks)
 ├── .githooks/                         - git hooks for every tool and person, enabled by npm ci in a git checkout
 │   ├── pre-commit                     - scans staged changes for secrets (when gitleaks is installed)
 │   └── pre-push                       - refuses a push to main or a red clean checkout; warns when unreviewed
@@ -178,6 +186,8 @@ Honesty about which rules have teeth:
 | Two review passes before merge | `scripts/review.sh` records verdicts; `.githooks/pre-push` checks them | **Warns only.** It never blocks. Merging unreviewed work is a choice you make, not something the tooling prevents. |
 | `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
 | Load context before acting | SessionStart hook prints "run /start first" | **Reminds only.** |
+| Think before changing anything | A short reminder on every message, in Claude Code (`settings.json`) and Codex (`.codex/hooks.json`) | **Reminds only.** Codex runs it after you trust the project's hooks once with `/hooks`. |
+| No force push | `.claude/settings.json` denies `git push --force ...` | **Blocks in Claude Code**, for that spelling only. `--force-with-lease` (your own branch, after a rebase) stays allowed. |
 | Everything else in `AGENTS.md` and `rules/` | The agent reading it | **Convention.** It binds by being read, which is why `AGENTS.md` is short. |
 
 ## The finished example

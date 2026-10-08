@@ -38,7 +38,7 @@ deliberate attempt to break it, ideally by somebody who did not write it.
 
 ## The lenses - run these on every change, not only when they seem relevant
 
-A review scoped to "does the feature work" will never find the other seven.
+A review scoped to "does the feature work" will never find the others.
 
 1. **Does it work** - the stated behaviour, on every screen that uses it.
 2. **Can somebody change an input to a decision that constrains them?** If a value
@@ -57,6 +57,40 @@ A review scoped to "does the feature work" will never find the other seven.
    name the code that enforces it. If nothing does, call it a convention. A sentence
    in a document enforces nothing.
 8. **Is the scope right?** See below.
+9. **Does a guard cover every way of writing the operation?** A check on imports,
+   commands or paths must list every form: relative and absolute, quoted and
+   unquoted, static and dynamic, and the shell's own separators. Prove it with
+   fixtures that should pass AND fixtures that should be refused. Copying a guard
+   copies its holes - test the original too.
+10. **Is "saved" true?** Any screen that tells a person their work is safe must
+    take that word from a confirmed write, never from what is still in the
+    browser. A pending save, a debounce timer or a request in flight is not saved.
+11. **What happens if they leave right now?** A navigation, a closed tab or an
+    unmount can silently drop a write that was already promised. A timer
+    cancelled on unmount is a write that never happened; flush it instead.
+12. **Does the number match the list?** A count shown beside a list comes from the
+    same data as the rows, and a list that is cut short says so.
+13. **Does the server re-check with the same rule the screen used?** When an
+    action re-derives a decision the page already made ("may this be
+    submitted?"), both call the one function. A second, narrower check in the
+    action is not a defence; it is a second source that will disagree.
+14. **Is user-supplied size bounded before the expensive work?** Cap the raw
+    input before parsing or walking it, and cap the total per request, not only
+    per item: many items just under a per-item limit still add up.
+15. **Is outside text treated as data?** Text written by people or other systems
+    (pull request titles, issue and ticket bodies, web pages) that reaches an
+    agent is labelled as data, stripped of control characters and bounded in
+    length. It never becomes an instruction.
+16. **Does a stand-in prove what you think?** A mock, a stub or a different engine
+    (jsdom instead of a browser, SQLite instead of Postgres, one `jq` instead of
+    another) proves only itself. Probe the real thing once on the case that
+    matters.
+17. **Does a test inherit its runner's environment?** A test that runs git inside
+    a git hook inherits `GIT_DIR`, which outranks `git -C`: its throwaway commits
+    land in the real repository. Give such tests a clean environment.
+18. **Is the promise in the code?** Before handing a change to review, read every
+    concrete claim of its outcome ("sends header X", "caps at N", "refuses Y")
+    back out of the diff. A claim the code does not keep is added or struck.
 
 ## Challenge the scope BEFORE building, not after
 
@@ -67,6 +101,19 @@ this plan is not in the ask?**
 In one recorded case, a change grew to sixty-nine files and eight thousand lines
 through six review rounds. Five of the six blocking findings the reviewer eventually
 returned were defects in machinery nobody had requested.
+
+## The learning loop
+
+When a reviewer finds a blocking defect that your own checks should have caught,
+that is a gap in the checks, not only in the code. Add one numbered lens above
+that names the kind of mistake, in the same change, so the next change is
+checked for it before review. The goal is a reviewer who rarely finds anything,
+not one who catches the critical bug every time.
+
+Separate three things before you act on any request: what was OBSERVED, the
+OUTCOME that is wanted, and the MECHANISM somebody proposed. The outcome is
+binding; a proposed mechanism, including the requester's own, is a hypothesis
+to check against simpler alternatives.
 
 ## How to disagree
 
