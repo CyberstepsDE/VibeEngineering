@@ -130,7 +130,7 @@ builds production.** It holds for the rest of the lab, and for every project
 after it.
 
 **Done looks like:** the new title is live at the production address, and you
-watched it pass the preview and both green checks on the way there.
+watched it pass the preview and all three green checks on the way there.
 
 **If it drags:** the preview address is on the pull request page and in the
 Vercel dashboard; the green checks live on the pull request.
@@ -385,8 +385,8 @@ each carrying the concrete sequence that triggers it, then SHIP or NO-SHIP. The
 script records both verdicts for that commit. With only one tool installed, both
 passes run on it and the record says so.
 
-**Done looks like:** both passes have said SHIP, on their own run of the checks,
-from minds that did not write the change. NO-SHIP findings go back to the first
+**Done looks like:** both passes have said SHIP on the exact commit, after the
+script's own run of `npm run verify`, from minds that did not write the change. NO-SHIP findings go back to the first
 agent to fix; the reviewer reads the result again. The merge waits on them -
 pushes and previews never did.
 

@@ -44,7 +44,7 @@ Every tracked file, and why it is there:
 ├── .agents                            - a symlink to .claude, so other agent tools find the same config
 ├── .githooks/                         - git hooks for every tool and person, enabled by npm ci
 │   ├── pre-commit                     - scans staged changes for secrets (when gitleaks is installed)
-│   └── pre-push                       - refuses a push to main or a red commit; warns when unreviewed
+│   └── pre-push                       - refuses a push to main or a red clean checkout; warns when unreviewed
 ├── scripts/
 │   ├── review.sh                      - runs both review passes on the other tool, records the verdicts
 │   ├── check-reviews.sh               - does this commit carry two SHIP verdicts
@@ -166,8 +166,8 @@ Honesty about which rules have teeth:
 | --- | --- | --- |
 | No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
 | No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks. `git push --no-verify` skips it. |
-| `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit. Same `--no-verify` caveat. |
-| No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns. CI scans the whole history on every pull request. |
+| `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. When the pushed commit is another branch or the tree has uncommitted changes, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
+| No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns, and `git commit --no-verify` skips it. CI scans the whole history on every pull request - but a secret that reached GitHub is already exposed and must be replaced. |
 | Two review passes before merge | `scripts/review.sh` records verdicts; `.githooks/pre-push` checks them | **Warns only.** It never blocks. Merging unreviewed work is a choice you make, not something the tooling prevents. |
 | `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
 | Load context before acting | SessionStart hook prints "run /start first" | **Reminds only.** |

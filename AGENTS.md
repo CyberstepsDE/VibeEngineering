@@ -62,8 +62,11 @@ write a new one that supersedes it. Never silently re-decide.
   blocks); for every tool and person, `.githooks/pre-push` refuses a push to main.
 - Run the full check before every commit: `npm run verify`. All of it green, no
   exceptions, and never remove a check to make it pass. `.githooks/pre-push` runs
-  it again and refuses to push a red commit; `.githooks/pre-commit` scans staged
-  changes for secrets when gitleaks is installed. Both are enabled by `npm ci`.
+  it again and refuses to push a red commit when that commit is your clean
+  checkout (otherwise it prints NOT VERIFIED and CI is the check);
+  `.githooks/pre-commit` scans staged changes for secrets when gitleaks is
+  installed. Both are enabled by `npm ci`, and `--no-verify` on a commit or a push
+  skips them - a decision, never a habit.
 - Open a pull request. Before it merges, the change gets **TWO review passes**, each
   by a mind that did not write it. An author checks whether the code does what they
   intended; a reviewer checks whether the intention was right. One mind does not ask
