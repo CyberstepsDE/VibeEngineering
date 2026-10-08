@@ -22,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/no-main-commit.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/no-main-commit.sh"
           }
         ]
       }
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/critical-thinking-reminder.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/critical-thinking-reminder.sh"
           }
         ]
       }

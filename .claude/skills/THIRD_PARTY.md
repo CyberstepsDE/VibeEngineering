@@ -12,6 +12,15 @@ The skills below are copied unchanged from [mattpocock/skills](https://github.co
 
 To update one, copy the folder again from a newer commit and change the commit above. Local changes belong in this repository's own rules or skills, not in these copies, so an update never overwrites them.
 
+## Know before you use: the architecture report loads remote scripts
+
+`improve-codebase-architecture` writes its report as an HTML file in the temp
+folder and opens it in the browser. The page loads Tailwind from
+`cdn.tailwindcss.com` and Mermaid 11 from `cdn.jsdelivr.net` (Mermaid in `loose`
+mode), and it holds your project's file names and architecture notes. Whoever
+controls either CDN could read that page. It holds no secrets unless you put
+them there; use the skill knowingly. The copy stays unchanged, as above.
+
 ## License
 
 ```text
