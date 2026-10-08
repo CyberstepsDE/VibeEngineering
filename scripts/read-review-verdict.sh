@@ -5,7 +5,7 @@
 # LAST non-empty line. A looser check ("contains VERDICT: SHIP anywhere") reads a
 # review that opens with a hopeful summary and closes with NO-SHIP as a pass.
 # INVALID is never treated as SHIP: an unreadable review is a review that did
-# not happen. Fixtures: tests/hooks/read-review-verdict.test.ts.
+# not happen. Fixtures: tests/hooks/review-gates.test.ts.
 set -eu
 
 file=${1:?Usage: read-review-verdict.sh <transcript>}

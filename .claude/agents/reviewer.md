@@ -24,7 +24,10 @@ whether the intention was right and what they did not think to check.
    dedicated second pass (`security-reviewer`) - but if you trip over something
    security-shaped on the way, report it anyway rather than assuming the other
    pass will find it.
-3. Run `npm run verify` and believe your own run, not the author's report of it.
+3. Believe a real run of `npm run verify`, never the author's report of it. Through
+   `/review` (`scripts/review.sh`) the script has already run it on this exact commit
+   before you start, and you stay read-only; when you are called directly, run it
+   yourself.
 
 ## What you report
 

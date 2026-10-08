@@ -4,7 +4,9 @@
 #
 # 1. Refuses a push to main: work reaches main through a pull request.
 # 2. Runs `npm run verify` on the commit being pushed and refuses on failure,
-#    so a red branch never reaches GitHub.
+#    when that commit is the clean checkout (HEAD, nothing uncommitted or
+#    untracked). Otherwise the local tree is not that commit, so it prints
+#    NOT VERIFIED and lets the push through; CI checks it on GitHub.
 # 3. WARNS (never refuses) when that commit has no two-SHIP review from
 #    scripts/review.sh. Pushing a draft is fine; merging it unreviewed is the
 #    choice this warning makes visible.
