@@ -1,6 +1,6 @@
 ---
 name: start
-description: Load this project's context at the beginning of a session, then say what you understand and wait. Run this FIRST in every new conversation, before answering anything.
+description: Load this project's context at the beginning of a session, then say what you understand and wait. Run this FIRST in every new conversation, before answering anything - unless the person asks for /onboarding, which runs it as soon as node, npm, git and jq work.
 ---
 
 # /start - load the project before you touch it
@@ -74,4 +74,5 @@ is the single most expensive mistake available to you, and it is free to avoid.
 
 ## Related
 
-`/grill-me` before building. `/save` when you finish.
+`/onboarding` the first time. `/grill-me` before building. `/review` before
+merging. `/save` when you finish.

@@ -39,6 +39,7 @@ Every tracked file, and why it is there:
 │   │   ├── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
 │   │   └── critical-thinking-reminder.sh - a short reminder on every message (Claude Code and Codex)
 │   └── skills/                        - named routines you trigger by typing their name
+│       ├── onboarding/SKILL.md        - /onboarding: a guided first session for somebody new here
 │       ├── start/SKILL.md             - /start: load context before acting
 │       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
 │       ├── review/SKILL.md            - /review: the two review passes on the committed branch
@@ -94,7 +95,8 @@ Three words worth defining once:
 - An AI coding agent: [Claude Code](https://code.claude.com), Codex CLI, or
   similar. The template is written for any of them. Having BOTH Claude Code and
   Codex makes the review independent (one writes, the other reviews).
-- `jq`, used by the review script (`brew install jq`; preinstalled on recent macOS).
+- `jq`, used by the commit hook (and so by its tests in `npm run verify`) and by
+  the review script (`brew install jq`; preinstalled on recent macOS).
 - Recommended: [gitleaks](https://github.com/gitleaks/gitleaks), so a secret is
   caught on your machine before it is pushed (`brew install gitleaks`). Without it
   the commit hook warns and CI still scans.
@@ -114,15 +116,14 @@ Three words worth defining once:
    git clone <your-repository's-URL>
    cd <repository-folder-name>
    ```
-3. **Install the toolchain's dependencies** (one time, or when they change).
-   This also switches on the git hooks in `.githooks/`:
-   ```bash
-   npm ci
-   ```
-4. **Open the folder in your AI coding agent.**
-5. **Type `/start`.** It reads `AGENTS.md`, checks that the project still runs,
-   and reports what it found instead of guessing.
-6. **Work.** Tell the agent in your own words what you want to build. It will
+3. **Open the folder in your AI coding agent.** The project's dependencies are
+   installed by the agent, not typed by you.
+4. **Type `/onboarding` the first time** - the agent walks you through the setup
+   and the way of working, one step at a time. After that, **start every session
+   with `/start`.** It installs the dependencies (`npm ci`, which also switches on
+   the git hooks in `.githooks/`), reads `AGENTS.md`, checks that the project
+   still runs, and reports what it found instead of guessing.
+5. **Work.** Tell the agent in your own words what you want to build. It will
    interview you before writing code (`/grill-me` forces this when it does not
    happen on its own). Work lands on a branch, gets reviewed (next section), and
    merges through a pull request. `docs/LAB.md` is a guided first project if you
