@@ -52,7 +52,8 @@ function runHook(
   try {
     execFileSync('bash', [HOOK], {
       input: JSON.stringify({
-        ...(eventCwd ? { cwd: eventCwd } : {}),
+        // Claude Code always sends the session's cwd; default it to the process's.
+        cwd: eventCwd ?? cwd,
         tool_input: { command, ...(description ? { description } : {}) },
       }),
       cwd,
@@ -140,6 +141,39 @@ describe('no-main-commit hook', () => {
       const parent = join(dir, '..')
       const name = dir.slice(parent.length + 1)
       expect(runHook(`cd ${name} && git commit -m x`, session, parent)).toBe(2)
+    })
+  })
+
+  describe('reads the target from the commit itself', () => {
+    it('takes no -C from another command in the chain', () => {
+      const mainRepo = repoOnBranch('main')
+      const worktree = repoOnBranch('feat/some-scope')
+      expect(runHook(`git -C ${mainRepo} status && git commit -m x`, worktree)).toBe(0)
+      expect(runHook(`git -C ${worktree} log -1 && git -C ${mainRepo} commit -m x`, worktree)).toBe(2)
+    })
+
+    it('reads --git-dir and --work-tree written as separate arguments', () => {
+      const mainRepo = repoOnBranch('main')
+      const elsewhere = repoOnBranch('feat/elsewhere')
+      expect(
+        runHook(`git --git-dir ${mainRepo}/.git --work-tree ${mainRepo} commit -m x`, elsewhere),
+      ).toBe(2)
+    })
+
+    it('lets the commit through when the event has no cwd', () => {
+      const mainRepo = repoOnBranch('main')
+      let code = 0
+      try {
+        execFileSync('bash', [HOOK], {
+          input: JSON.stringify({ tool_input: { command: 'git commit -m x' } }),
+          cwd: mainRepo,
+          stdio: 'pipe',
+          env: ENV,
+        })
+      } catch (err) {
+        code = (err as { status?: number }).status ?? 1
+      }
+      expect(code).toBe(0)
     })
   })
 
