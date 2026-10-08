@@ -94,11 +94,11 @@ station where the person acts outside the chat, and only to log in.
    "missing"): node (22.12 or newer, `.nvmrc`), npm, git, gh, jq, claude, codex,
    and gitleaks (recommended). You install what is missing once they say yes,
    naming what you are about to install and from where.
-2. **You run `/start`** as soon as node, npm and git work; the other tools are not
-   needed for it. It runs `npm ci` (the toolchain, and the git hooks in
-   `.githooks/` switched on), then `npm run verify`, and reports what it found.
-   Explain the point: `/start` is how every session begins, and `/save` is how it
-   ends.
+2. **You run `/start`** as soon as node, npm, git and jq work (`npm run verify`
+   tests the commit hook, which needs jq); the other tools are not needed for
+   it. It runs `npm ci` (the toolchain, and the git hooks in `.githooks/`
+   switched on), then `npm run verify`, and reports what it found. Explain the
+   point: `/start` is how every session begins, and `/save` is how it ends.
 3. **The person logs in once per tool**, typing their own credentials into the
    tool's prompt: GitHub (`gh auth login`), Codex (`codex login`), Claude Code.
    You verify each login with a read-only call and say what you see. Having BOTH

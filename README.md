@@ -95,7 +95,8 @@ Three words worth defining once:
 - An AI coding agent: [Claude Code](https://code.claude.com), Codex CLI, or
   similar. The template is written for any of them. Having BOTH Claude Code and
   Codex makes the review independent (one writes, the other reviews).
-- `jq`, used by the review script (`brew install jq`; preinstalled on recent macOS).
+- `jq`, used by the commit hook (and so by its tests in `npm run verify`) and by
+  the review script (`brew install jq`; preinstalled on recent macOS).
 - Recommended: [gitleaks](https://github.com/gitleaks/gitleaks), so a secret is
   caught on your machine before it is pushed (`brew install gitleaks`). Without it
   the commit hook warns and CI still scans.
