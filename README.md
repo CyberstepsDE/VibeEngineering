@@ -115,17 +115,14 @@ Three words worth defining once:
    git clone <your-repository's-URL>
    cd <repository-folder-name>
    ```
-3. **Install the toolchain's dependencies** (one time, or when they change).
-   This also switches on the git hooks in `.githooks/`:
-   ```bash
-   npm ci
-   ```
-4. **Open the folder in your AI coding agent.**
-5. **Type `/onboarding` the first time** - the agent walks you through the setup
+3. **Open the folder in your AI coding agent.** The project's dependencies are
+   installed by the agent, not typed by you.
+4. **Type `/onboarding` the first time** - the agent walks you through the setup
    and the way of working, one step at a time. After that, **start every session
-   with `/start`.** It reads `AGENTS.md`, checks that the project still runs, and
-   reports what it found instead of guessing.
-6. **Work.** Tell the agent in your own words what you want to build. It will
+   with `/start`.** It installs the dependencies (`npm ci`, which also switches on
+   the git hooks in `.githooks/`), reads `AGENTS.md`, checks that the project
+   still runs, and reports what it found instead of guessing.
+5. **Work.** Tell the agent in your own words what you want to build. It will
    interview you before writing code (`/grill-me` forces this when it does not
    happen on its own). Work lands on a branch, gets reviewed (next section), and
    merges through a pull request. `docs/LAB.md` is a guided first project if you

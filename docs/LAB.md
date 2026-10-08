@@ -55,12 +55,11 @@ starter's files.
 ```bash
 git clone https://github.com/<you>/domain-check.git
 cd domain-check
-npm ci
 ```
 
 Open the folder in your agent. First time with this template? Type `/onboarding`:
-it walks you through the setup and runs `/start` for you once the tools are
-there. Otherwise type `/start` - nothing else yet. Either way, `/start` reads
+it walks you through the setup and runs `/start` for you as soon as node, npm
+and git work. Otherwise type `/start` - nothing else yet. Either way, `/start` reads
 `AGENTS.md`, runs `npm run verify` green on a template with no application in
 it, and reports back what it found - a tool describing its own starting state
 instead of assuming one.
@@ -69,8 +68,9 @@ instead of assuming one.
 repository currently is (a clean workflow template, no app yet) and the checks
 are green. The goal has not even been mentioned yet, and no code written.
 
-**If it drags:** `npm ci` on slow wifi is the usual culprit - run it before the
-session so `node_modules/` is already warm.
+**If it drags:** the `npm ci` inside `/start` on slow wifi is the usual culprit - on
+a workshop day, ask the agent to run it before the session, so `node_modules/` is
+already warm.
 
 ### Step 3: the agent wires its own pipeline
 

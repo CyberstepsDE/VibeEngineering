@@ -57,10 +57,13 @@ a copy. Read a fact from its file when it matters instead of reciting this page.
    once, describe what they want, decide and look. Name the decisions that are
    always theirs: what to build, "hold" or "go" for a merge, and when anything
    goes to production.
-3. Check that this is THEIR copy, not the template itself:
-   `git remote get-url origin`. If it points at the template's own repository,
-   stop and walk them through `docs/LAB.md` Stage 0 Step 1 ("Use this template"):
-   a copy is theirs, with its own history and its own pipeline.
+3. Check that this is THEIR copy, not the template itself, with the credentials
+   cut out of the address (a remote URL can carry a token):
+   `git remote get-url origin | sed -E 's#//[^/@]*@#//#'`. If it points at the
+   template's own repository, stop and walk them through `docs/LAB.md` Stage 0
+   Steps 1 and 2: "Use this template" makes a copy that is theirs, with its own
+   history and its own pipeline, and they clone that copy and open it in a new
+   session, where `/onboarding` continues.
 4. Check the branch and state: `git branch --show-current`, `git status --short`.
 
 ## Station 1 - what this repository is
@@ -91,10 +94,11 @@ station where the person acts outside the chat, and only to log in.
    "missing"): node (22.12 or newer, `.nvmrc`), npm, git, gh, jq, claude, codex,
    and gitleaks (recommended). You install what is missing once they say yes,
    naming what you are about to install and from where.
-2. **You run `/start`** once the tools are there: it runs `npm ci` (the toolchain,
-   and the git hooks in `.githooks/` switched on), then `npm run verify`, and
-   reports what it found. Explain the point: `/start` is how every session
-   begins, and `/save` is how it ends.
+2. **You run `/start`** as soon as node, npm and git work; the other tools are not
+   needed for it. It runs `npm ci` (the toolchain, and the git hooks in
+   `.githooks/` switched on), then `npm run verify`, and reports what it found.
+   Explain the point: `/start` is how every session begins, and `/save` is how it
+   ends.
 3. **The person logs in once per tool**, typing their own credentials into the
    tool's prompt: GitHub (`gh auth login`), Codex (`codex login`), Claude Code.
    You verify each login with a read-only call and say what you see. Having BOTH
