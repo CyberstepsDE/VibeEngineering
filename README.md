@@ -42,7 +42,7 @@ Every tracked file, and why it is there:
 │       ├── review/SKILL.md            - /review: the two review passes on the committed branch
 │       └── save/SKILL.md              - /save: write down what happened for the next session
 ├── .agents                            - a symlink to .claude, so other agent tools find the same config
-├── .githooks/                         - git hooks for every tool and person, enabled by npm ci
+├── .githooks/                         - git hooks for every tool and person, enabled by npm ci in a git checkout
 │   ├── pre-commit                     - scans staged changes for secrets (when gitleaks is installed)
 │   └── pre-push                       - refuses a push to main or a red clean checkout; warns when unreviewed
 ├── scripts/
@@ -141,7 +141,8 @@ Run them with `/review` (the script `scripts/review.sh`), after committing and
 before merging:
 
 - **With both Claude Code and Codex**, the logic pass runs on the tool that did
-  NOT write the change and the security pass runs on Codex. A different model has
+  NOT write the change and the security pass runs on Codex (on Claude when Codex
+  wrote it). A different model has
   different blind spots than the model that wrote the code - that independence is
   the value.
 - **With only one tool**, both passes run on it and the record says `same-tool`.
@@ -149,7 +150,9 @@ before merging:
   `.claude/agents/reviewer.md`, then `.claude/agents/security-reviewer.md`.
 
 The verdicts are stored for the exact commit, outside the repository files; a new
-commit needs a new review.
+commit needs a new review. The script runs the branch's own checks on your machine,
+so it is for your own work and your agents' work. A pull request from somebody you
+do not trust is read on GitHub and checked by CI, never checked out and run locally.
 
 Both passes return **SHIP** or **NO-SHIP** with findings. NO-SHIP findings go
 back to the author; the reviewer re-reads the fix. Two more agents help but gate
@@ -165,7 +168,7 @@ Honesty about which rules have teeth:
 | Rule | What actually holds it | Honest label |
 | --- | --- | --- |
 | No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
-| No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks. `git push --no-verify` skips it. |
+| No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks (in a git checkout; a ZIP download has no git and no hooks). `git push --no-verify` skips it. |
 | `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. When the pushed commit is another branch or the tree has uncommitted or untracked files, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
 | No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns, and `git commit --no-verify` skips it. CI scans the whole history on every pull request - but a secret that reached GitHub is already exposed and must be replaced. |
 | Two review passes before merge | `scripts/review.sh` records verdicts; `.githooks/pre-push` checks them | **Warns only.** It never blocks. Merging unreviewed work is a choice you make, not something the tooling prevents. |

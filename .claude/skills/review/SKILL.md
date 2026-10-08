@@ -8,6 +8,14 @@ description: Run the two review passes (logic, security) on the committed branch
 Nothing merges on the word of the mind that wrote it. This runs both passes from
 `AGENTS.md` section 3 on the exact commit you are about to merge.
 
+## Only on work you trust
+
+The script runs the branch's own `npm run verify` on this machine, with your
+permissions. Use it on your work and your agents' work. Never check out and run a
+branch from somebody you do not trust, such as a pull request from a fork: its
+code would run as you. CI checks those on GitHub's machines, without your secrets,
+and a person reads the diff before anything else.
+
 ## Step 1 - be reviewable
 
 - Every change is committed. A review is of a commit, not of a working tree.
@@ -22,14 +30,15 @@ Nothing merges on the word of the mind that wrote it. This runs both passes from
 ## Step 2 - run both passes
 
 ```bash
-scripts/review.sh <claude|codex> origin/main "<the outcome sentence>"
+scripts/review.sh <claude|codex|other> origin/main "<the outcome sentence>"
 ```
 
 The first argument names who WROTE the change: `claude`, `codex`, or `other`
-for another agent or a person. The script:
+for another agent or a person working in this repository. The script:
 
 1. runs `npm run verify` on this commit and stops if it fails;
-2. runs the logic pass on the OTHER tool and the security pass on Codex, each
+2. runs the logic pass on the OTHER tool and the security pass on Codex (on
+   Claude when Codex wrote the change), each
    following its instructions in `.claude/agents/`;
 3. stores both transcripts and a manifest under
    `<git common dir>/review-evidence/<commit sha>/`, outside the repository files;

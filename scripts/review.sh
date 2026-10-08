@@ -5,7 +5,12 @@
 #   scripts/review.sh <claude|codex|other> <base-ref> "<user outcome>"
 #
 # The first argument names who WROTE the change (`other` for another agent or a
-# person). The logic pass runs on the
+# person working in THIS repository).
+#
+# TRUST: the script runs the branch's own `npm run verify` on this machine. Run it
+# on your own work and your own agents' work only. A branch from somebody you do
+# not trust (a pull request from a fork) is never checked out and run locally;
+# CI runs it on GitHub's machines without access to your secrets. The logic pass runs on the
 # other one (a different model has different blind spots); the security pass
 # runs on Codex. When the other tool is not installed, both passes fall back to
 # the one you have, and the record says so: a same-tool review is better than
@@ -95,11 +100,13 @@ else
   [ "$author" = codex ] && logic_tool=claude
   has "$logic_tool" || logic_tool=$author
 fi
+# Security on Codex, unless Codex wrote the change and Claude is there to read it.
 security_tool=codex
-has codex || security_tool=claude
+[ "$author" = codex ] && has claude && security_tool=claude
+has "$security_tool" || security_tool=$logic_tool
 has "$logic_tool" || { echo "BLOCKED: neither claude nor codex is installed." >&2; exit 1; }
 independence=independent
-[ "$logic_tool" = "$author" ] && independence=same-tool
+{ [ "$logic_tool" = "$author" ] || [ "$security_tool" = "$author" ]; } && independence=same-tool
 
 scope="Review the immutable diff $base_sha...$head_sha in this repository. Stay read-only: change no file and run nothing that writes."
 logic_prompt="Follow .claude/agents/reviewer.md. The author states the intended outcome: \"$outcome\". Judge that outcome FIRST: does the diff deliver it for an ordinary user on the plain path, and is it the simplest mechanism that does? $scope Say explicitly whether any part defends a scenario nobody has observed. The last line of your answer must be exactly VERDICT: SHIP or VERDICT: NO-SHIP."

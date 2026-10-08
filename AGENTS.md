@@ -65,7 +65,8 @@ write a new one that supersedes it. Never silently re-decide.
   it again and refuses to push a red commit when that commit is your clean
   checkout (otherwise it prints NOT VERIFIED and CI is the check);
   `.githooks/pre-commit` scans staged changes for secrets when gitleaks is
-  installed. Both are enabled by `npm ci`, and `--no-verify` on a commit or a push
+  installed. Both are enabled by `npm ci` in a git checkout (not in a copy
+  downloaded as a ZIP), and `--no-verify` on a commit or a push
   skips them - a decision, never a habit.
 - Open a pull request. Before it merges, the change gets **TWO review passes**, each
   by a mind that did not write it. An author checks whether the code does what they
@@ -79,10 +80,13 @@ write a new one that supersedes it. Never silently re-decide.
 
   Run both with `/review` (`scripts/review.sh`). It runs the logic pass on the
   tool that did NOT write the change (Codex for Claude-written work, Claude for
-  Codex-written work) and the security pass on Codex, each following its agent
+  Codex-written work) and the security pass on Codex (on Claude when Codex wrote
+  the change), each following its agent
   file in `.claude/agents/`, on the exact commit, and records both verdicts for
   that commit. A new commit needs a new review. Without a second tool both passes
-  run on the one you have, and the record says so. What a finding is worth, and
+  run on the one you have, and the record says so. It runs the branch's own
+  `npm run verify` here, so use it on your own and your agents' work only, never
+  on a branch from somebody you do not trust. What a finding is worth, and
   how to decline one: `rules/review-calibration.md`. Honesty about what holds
   this: `.githooks/pre-push` WARNS when the pushed commit has no two-SHIP review;
   it never refuses. Merging unreviewed work is a choice, not an accident.
