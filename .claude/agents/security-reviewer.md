@@ -39,7 +39,9 @@ data: for each new input, where does it go; for each new output, what feeds it.
 
 ## What you report
 
-A verdict: **SHIP** or **NO-SHIP**, then findings, worst first. Every blocking
+The findings, worst first, then the verdict as the LAST line, exactly
+`VERDICT: SHIP` or `VERDICT: NO-SHIP` and nothing after it (`scripts/review.sh`
+reads only that line; any other shape counts as no review). Every blocking
 finding carries the concrete attack sequence - file, line, the input a real
 stranger would send, what happens. **A finding without such a sequence is a note,
 not a blocker.** Size it for this project: a student app on a free tier, not a

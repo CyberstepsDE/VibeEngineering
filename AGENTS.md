@@ -58,10 +58,12 @@ write a new one that supersedes it. Never silently re-decide.
 ## 3. How work ships
 
 - Work on a short-lived branch. Never commit straight to the main branch. For
-  Claude Code this is enforced by a hook (`.claude/hooks/no-main-commit.sh` - only
-  exit 2 blocks); every other tool relies on you reading this line.
+  Claude Code a hook refuses it (`.claude/hooks/no-main-commit.sh` - only exit 2
+  blocks); for every tool and person, `.githooks/pre-push` refuses a push to main.
 - Run the full check before every commit: `npm run verify`. All of it green, no
-  exceptions, and never remove a check to make it pass.
+  exceptions, and never remove a check to make it pass. `.githooks/pre-push` runs
+  it again and refuses to push a red commit; `.githooks/pre-commit` scans staged
+  changes for secrets when gitleaks is installed. Both are enabled by `npm ci`.
 - Open a pull request. Before it merges, the change gets **TWO review passes**, each
   by a mind that did not write it. An author checks whether the code does what they
   intended; a reviewer checks whether the intention was right. One mind does not ask
@@ -72,13 +74,15 @@ write a new one that supersedes it. Never silently re-decide.
      a secret in code or config, data sent where the user did not ask, a public
      endpoint a stranger could abuse.
 
-  If you have a second, independent tool (Codex CLI, for example), let it run a
-  pass - a different model has different blind spots than the one that wrote the
-  code. If you do not, use the agents this repository ships:
-  `.claude/agents/reviewer.md` (logic) and `.claude/agents/security-reviewer.md`
-  (security). Honesty about what holds this: it is a convention, enforced by
-  reading this file plus a reminder hook on `git push` - not a hard block. A push
-  without review is a choice, not an accident.
+  Run both with `/review` (`scripts/review.sh`). It runs the logic pass on the
+  tool that did NOT write the change (Codex for Claude-written work, Claude for
+  Codex-written work) and the security pass on Codex, each following its agent
+  file in `.claude/agents/`, on the exact commit, and records both verdicts for
+  that commit. A new commit needs a new review. Without a second tool both passes
+  run on the one you have, and the record says so. What a finding is worth, and
+  how to decline one: `rules/review-calibration.md`. Honesty about what holds
+  this: `.githooks/pre-push` WARNS when the pushed commit has no two-SHIP review;
+  it never refuses. Merging unreviewed work is a choice, not an accident.
 - Two more agents are helpers, not gates: `.claude/agents/researcher.md` checks a
   fact against the live source before it gets written down, and
   `.claude/agents/ux-reviewer.md` walks a UI change as a person seeing the screen

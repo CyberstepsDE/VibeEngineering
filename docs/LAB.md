@@ -118,8 +118,9 @@ Watch the road, in order:
 2. The **push** makes Vercel build a **preview**: a shareable address just for
    this branch. Open it - the new title is live.
 3. The **pull request** makes CI run `npm run verify` on GitHub's machines -
-   watch the two checks turn green on the pull request page: `verify` (the
-   project's own gate) and `browser` (a robot browser clicking the page). (They run on the
+   watch the three checks turn green on the pull request page: `verify` (the
+   project's own gate), `secrets` (a scan of the whole history for keys and
+   passwords) and `browser` (a robot browser clicking the page). (They run on the
    pull request, not on a bare branch push.)
 4. **Merge** - the button is yours. Vercel builds `main`, and the **production**
    address shows the change.
@@ -374,16 +375,15 @@ More powers:
 The branch is pushed and its preview works. Nothing MERGES until minds that did
 not write the change say SHIP - both of them.
 
-**Ask the agent:** nothing - this stage belongs to fresh minds. Open a fresh
-agent session, point it at the branch, and run the two review passes from
-`AGENTS.md` section 3: first the logic reviewer (`.claude/agents/reviewer.md` -
-read-only tools, no editing), then the security pass
-(`.claude/agents/security-reviewer.md`, or Codex if you have it - a different
-model has different blind spots). The logic reviewer reads
-`git diff main...HEAD`, then every changed file in full, and runs
-`npm run verify` itself - believing its own run, not the builder's report. Each
-pass returns SHIP or NO-SHIP, findings worst first, each carrying the concrete
-sequence that triggers it.
+**Ask the agent:** "run /review". It runs the two passes from `AGENTS.md`
+section 3 on the committed branch: the logic pass on the tool that did NOT write
+the change (Codex, when Claude wrote it), the security pass on Codex - a
+different model has different blind spots. Each pass follows its agent file
+(`.claude/agents/reviewer.md`, `.claude/agents/security-reviewer.md`), reads the
+exact diff and the changed files in full, and returns its findings, worst first,
+each carrying the concrete sequence that triggers it, then SHIP or NO-SHIP. The
+script records both verdicts for that commit. With only one tool installed, both
+passes run on it and the record says so.
 
 **Done looks like:** both passes have said SHIP, on their own run of the checks,
 from minds that did not write the change. NO-SHIP findings go back to the first
@@ -395,7 +395,7 @@ list - a review that names its attack paths teaches more than a bare pass. If
 time is short, fix only the findings that carry an executable sequence and keep
 the rest as notes.
 
-## Stage 6: merge - two SHIPs, two green robot checks, and production builds itself
+## Stage 6: merge - two SHIPs, three green robot checks, and production builds itself
 
 Two different gates guard `main` - minds, and a robot - and the pull request
 page is where both show.
@@ -406,7 +406,7 @@ take stock:
 - The **review passes** (stage 5) were minds reading the change - and they ran
   on your machine. They are deliberately NOT in CI: there they would need model
   API keys, so this repository keeps review local, and the push-time hook only
-  reminds you it exists.
+  warns when the pushed commit has no two-SHIP record.
 - The **CI check** is a robot: the same `npm run verify`, run by GitHub on every
   pull request - it re-ran on every push. It cannot judge intent, and it cannot
   be forgotten either.

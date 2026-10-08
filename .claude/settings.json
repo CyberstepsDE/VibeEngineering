@@ -17,10 +17,6 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/no-main-commit.sh"
-          },
-          {
-            "type": "command",
-            "command": "cat | grep -q 'git push' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Before push: did BOTH review passes read this branch (reviewer + security-reviewer, or Codex)? A push without review is a choice, not an accident.\"}}' || true"
           }
         ]
       }

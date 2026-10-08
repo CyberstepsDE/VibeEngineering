@@ -28,7 +28,9 @@ whether the intention was right and what they did not think to check.
 
 ## What you report
 
-A verdict: **SHIP** or **NO-SHIP**, then the findings, worst first. Every finding
+The findings, worst first, then the verdict as the LAST line, exactly
+`VERDICT: SHIP` or `VERDICT: NO-SHIP` and nothing after it (`scripts/review.sh`
+reads only that line; any other shape counts as no review). Every finding
 carries the concrete sequence that triggers it - file, line, input, what happens.
 **A finding without a sequence a real user could execute is a note, not a blocker.**
 If you found nothing, say what you tried and what you would attack next with more
