@@ -40,8 +40,10 @@ session_dir=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null)
 # `git -C "<dir>" commit` reaches the decision.
 printf '%s' "$input" | grep -qE '\bgit\b[^;|&]*\bcommit\b' || exit 0
 
-# Only the command is read - never the tool's description or anything else in
-# the event. jq unescapes the JSON string, so a quoted path arrives as written.
+# The decision reads two fields of the event, the command and the session's
+# cwd, never the tool's description. jq unescapes the JSON string, so a quoted
+# path arrives as written. (The fast reject above only skips events with no
+# "git ... commit" anywhere in them; it never refuses anything.)
 command_line=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 [ -n "$command_line" ] || exit 0
 
