@@ -379,17 +379,23 @@ not write the change say SHIP - both of them.
 **Ask the agent:** "run /review". It runs the two passes from `AGENTS.md`
 section 3 on the committed branch: the logic pass on the tool that did NOT write
 the change (Codex, when Claude wrote it), the security pass on Codex (on Claude
-when Codex wrote it) - a different model has different blind spots. Each pass follows its agent file
-(`.claude/agents/reviewer.md`, `.claude/agents/security-reviewer.md`), reads the
-exact diff and the changed files in full, and returns its findings, worst first,
-each carrying the concrete sequence that triggers it, then SHIP or NO-SHIP. The
-script records both verdicts for that commit. With only one tool installed, both
-passes run on it and the record says so.
+when Codex wrote it) - a different model has different blind spots. Each pass
+follows its agent file (`.claude/agents/reviewer.md`,
+`.claude/agents/security-reviewer.md`), reads the exact diff and the changed
+files in full, and returns its findings, worst first, each carrying the concrete
+sequence that triggers it, then SHIP or NO-SHIP. The script records both
+verdicts for that commit. With only one tool installed, both passes run on it
+and the record says so.
+
+The script runs the branch's own `npm run verify` on your machine, so use it
+only on your own work or your agents'. A branch from somebody you do not trust,
+such as a pull request from a fork, is read on GitHub and checked by CI, never
+checked out and run locally.
 
 **Done looks like:** both passes have said SHIP on the exact commit, after the
-script's own run of `npm run verify`, from minds that did not write the change. NO-SHIP findings go back to the first
-agent to fix; the reviewer reads the result again. The merge waits on them -
-pushes and previews never did.
+script's own run of `npm run verify`, from minds that did not write the change.
+NO-SHIP findings go back to the first agent to fix; the reviewer reads the
+result again. The merge waits on them - pushes and previews never did.
 
 **If it drags:** if a reviewer answers SHIP immediately, read its "what I tried"
 list - a review that names its attack paths teaches more than a bare pass. If

@@ -10,10 +10,13 @@
 # TRUST: the script runs the branch's own `npm run verify` on this machine. Run it
 # on your own work and your own agents' work only. A branch from somebody you do
 # not trust (a pull request from a fork) is never checked out and run locally;
-# CI runs it on GitHub's machines without access to your secrets. The logic pass runs on the
-# other one (a different model has different blind spots); the security pass
-# runs on Codex. When the other tool is not installed, both passes fall back to
-# the one you have, and the record says so: a same-tool review is better than
+# CI runs it on GitHub's machines without access to your secrets.
+#
+# Routing: the logic pass runs on the tool that did not write the change (Codex
+# for `claude` and `other`, Claude for `codex`), because a different model has
+# different blind spots. The security pass runs on Codex, or on Claude when Codex
+# wrote the change. When the other tool is not installed, both passes fall back
+# to the one you have, and the record says so: a same-tool review is better than
 # none, and worse than an independent one.
 #
 # Each pass follows its instructions in .claude/agents/ (reviewer.md and
