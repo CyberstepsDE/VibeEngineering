@@ -39,6 +39,7 @@ Every tracked file, and why it is there:
 │   │   ├── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
 │   │   └── critical-thinking-reminder.sh - a short reminder on every message (Claude Code and Codex)
 │   └── skills/                        - named routines you trigger by typing their name
+│       ├── onboarding/SKILL.md        - /onboarding: a guided first session for somebody new here
 │       ├── start/SKILL.md             - /start: load context before acting
 │       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
 │       ├── review/SKILL.md            - /review: the two review passes on the committed branch
@@ -120,8 +121,10 @@ Three words worth defining once:
    npm ci
    ```
 4. **Open the folder in your AI coding agent.**
-5. **Type `/start`.** It reads `AGENTS.md`, checks that the project still runs,
-   and reports what it found instead of guessing.
+5. **Type `/onboarding` the first time** - the agent walks you through the setup
+   and the way of working, one step at a time. After that, **start every session
+   with `/start`.** It reads `AGENTS.md`, checks that the project still runs, and
+   reports what it found instead of guessing.
 6. **Work.** Tell the agent in your own words what you want to build. It will
    interview you before writing code (`/grill-me` forces this when it does not
    happen on its own). Work lands on a branch, gets reviewed (next section), and

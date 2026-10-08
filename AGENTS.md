@@ -18,6 +18,10 @@ act, no matter how obvious the request looks.
 When you finish, run `/save`. It writes down what happened so the next session - which
 will remember nothing - can pick up where you left off.
 
+Somebody new to this template? `/onboarding` walks them through it once: who does
+what between them and the agent, the one-time setup, how a change travels from an
+idea to production, and the security habits.
+
 ---
 
 ## 1. The two gates, in order

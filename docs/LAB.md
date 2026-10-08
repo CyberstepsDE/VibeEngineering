@@ -58,7 +58,8 @@ cd domain-check
 npm ci
 ```
 
-Open the folder in your agent and type `/start` - nothing else yet. Let it read
+Open the folder in your agent. First time with this template? Type `/onboarding`
+and let it walk you through the setup; then type `/start` - nothing else yet. Let it read
 `AGENTS.md`, run `npm run verify` green on a template with no application in it,
 and report back what it found - a tool describing its own starting state instead
 of assuming one.
