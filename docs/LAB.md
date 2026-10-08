@@ -58,11 +58,12 @@ cd domain-check
 npm ci
 ```
 
-Open the folder in your agent. First time with this template? Type `/onboarding`
-and let it walk you through the setup; then type `/start` - nothing else yet. Let it read
-`AGENTS.md`, run `npm run verify` green on a template with no application in it,
-and report back what it found - a tool describing its own starting state instead
-of assuming one.
+Open the folder in your agent. First time with this template? Type `/onboarding`:
+it walks you through the setup and runs `/start` for you once the tools are
+there. Otherwise type `/start` - nothing else yet. Either way, `/start` reads
+`AGENTS.md`, runs `npm run verify` green on a template with no application in
+it, and reports back what it found - a tool describing its own starting state
+instead of assuming one.
 
 **Done looks like:** the agent has stated, in its own words, what this
 repository currently is (a clean workflow template, no app yet) and the checks

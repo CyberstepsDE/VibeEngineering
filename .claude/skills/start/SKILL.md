@@ -1,6 +1,6 @@
 ---
 name: start
-description: Load this project's context at the beginning of a session, then say what you understand and wait. Run this FIRST in every new conversation, before answering anything.
+description: Load this project's context at the beginning of a session, then say what you understand and wait. Run this FIRST in every new conversation, before answering anything - unless the person asks for /onboarding, which runs it once the tools are installed.
 ---
 
 # /start - load the project before you touch it

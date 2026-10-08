@@ -13,7 +13,9 @@ This file is the entry point. It is deliberately short. The detail lives in
 
 Run `/start`. It loads the project context: what this is, what state it is in, and
 what was last worked on. If you have not run it, you do not have enough context to
-act, no matter how obvious the request looks.
+act, no matter how obvious the request looks. The one exception is a person's
+first session with this template: when they ask for `/onboarding`, run that
+instead; it checks the tools first and runs `/start` once they are there.
 
 When you finish, run `/save`. It writes down what happened so the next session - which
 will remember nothing - can pick up where you left off.

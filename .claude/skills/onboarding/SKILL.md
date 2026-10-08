@@ -208,5 +208,5 @@ Read `rules/secrets.md` and `rules/review-calibration.md`.
    the way of working can be asked now or in any later session, and that you are
    glad to answer. Answer each one before closing.
 4. If a question shows that part of this onboarding is wrong, unclear or out of
-   date, that is a documentation defect: fix this file or the file it points to, on
-   a branch, through the same path as any other change.
+   date, say so plainly and offer to fix it after the onboarding, as an ordinary
+   change through the path from Station 4.
