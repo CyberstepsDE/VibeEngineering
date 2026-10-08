@@ -45,10 +45,12 @@ for another agent or a person working in this repository. The script:
    `<git common dir>/review-evidence/<commit sha>/`, outside the repository files;
 4. prints both verdicts and exits non-zero unless both say SHIP.
 
-If the other tool is not installed, both passes run on the one you have and the
-manifest says `same-tool`. That is weaker than an independent review; say so in
-the pull request. With neither tool available, open a fresh agent session on the
-branch and run the `reviewer`, then the `security-reviewer` agent by hand.
+If the other tool is not installed, both passes run on the one you have. When
+that tool also wrote the change, the manifest says `same-tool`: weaker than an
+independent review, so say so in the pull request. For an `other` author it
+still says `independent`, because neither pass ran on the author. With neither
+tool available, open a fresh agent session on the branch and run the `reviewer`,
+then the `security-reviewer` agent by hand.
 
 If a pass returns nothing, the tool is usually not logged in or its default
 model is not available to your account: set `REVIEW_CODEX_MODEL` or

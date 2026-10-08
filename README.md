@@ -145,7 +145,9 @@ before merging:
   wrote it). A different model has
   different blind spots than the model that wrote the code - that independence is
   the value.
-- **With only one tool**, both passes run on it and the record says `same-tool`.
+- **With only one tool**, both passes run on it. The record says `same-tool`
+  when that tool also wrote the change, and `independent` when the author is
+  `other` (a person or another agent), since neither pass ran on the author.
   With no CLI at all, open a fresh agent session on the branch and run
   `.claude/agents/reviewer.md`, then `.claude/agents/security-reviewer.md`.
 
