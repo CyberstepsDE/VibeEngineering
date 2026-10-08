@@ -41,11 +41,9 @@ session_dir=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null)
 printf '%s' "$input" | grep -qE '\bgit\b[^;|&]*\bcommit\b' || exit 0
 
 # Only the command is read - never the tool's description or anything else in
-# the event. jq unescapes the JSON string, so a quoted path arrives as written;
-# the sed line is the fallback when jq is missing.
+# the event. jq unescapes the JSON string, so a quoted path arrives as written.
 command_line=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
-[ -n "$command_line" ] || command_line=$(printf '%s' "$input" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p' | awk 'NR==1')
-[ -n "$command_line" ] || command_line=$input
+[ -n "$command_line" ] || exit 0
 
 # Is "commit" the git SUBCOMMAND - the first token after "git" that does not
 # start with "-"? -C, -c, --git-dir, --work-tree and --namespace may take their
@@ -60,13 +58,22 @@ is_commit_invocation() {
   while [ "$i" -lt "$n" ]; do
     case "${tokens[$i]}" in
       # These print something and exit: `git --help commit` is not a commit.
-      -h | --help | -v | --version | --exec-path | --html-path | --man-path | --info-path) return 1 ;;
+      -h | --help | -v | --version | --exec-path | --html-path | --man-path | --info-path | --list-cmds=*) return 1 ;;
       -C | -c | --git-dir | --work-tree | --namespace) i=$((i + 2)) ;;
       -*) i=$((i + 1)) ;;
       *) break ;;
     esac
   done
-  [ "${tokens[$i]:-}" = "commit" ]
+  [ "${tokens[$i]:-}" = "commit" ] || return 1
+  # A commit that only prints and writes nothing is not a commit either.
+  local j=$((i + 1))
+  while [ "$j" -lt "$n" ]; do
+    case "${tokens[$j]}" in
+      -h | --help | --dry-run | --short | --porcelain) return 1 ;;
+    esac
+    j=$((j + 1))
+  done
+  return 0
 }
 
 unquote() {

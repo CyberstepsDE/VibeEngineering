@@ -191,6 +191,12 @@ describe('no-main-commit hook', () => {
       expect(runHook('git diff -- commit-notes.md', dir)).toBe(0)
       expect(runHook('git --help commit', dir)).toBe(0)
       expect(runHook('git --exec-path commit', dir)).toBe(0)
+      expect(runHook('git --list-cmds=main commit', dir)).toBe(0)
+      expect(runHook('git commit --help', dir)).toBe(0)
+      expect(runHook('git commit -h', dir)).toBe(0)
+      expect(runHook('git commit --dry-run -m x', dir)).toBe(0)
+      expect(runHook('git commit --short', dir)).toBe(0)
+      expect(runHook('git commit --porcelain', dir)).toBe(0)
     })
 
     it('fails open on a payload that is not JSON', () => {
