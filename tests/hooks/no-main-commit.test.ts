@@ -15,10 +15,22 @@ import { afterAll, describe, expect, it } from 'vitest'
 const HOOK = join(process.cwd(), '.claude/hooks/no-main-commit.sh')
 const temps: string[] = []
 
+// Git exports GIT_DIR and friends into the hooks it runs, and they outrank
+// `git -C <dir>`. These tests run inside `.githooks/pre-push` (through
+// `npm run verify`), so without this every throwaway commit below would land in
+// the REAL repository, and its config would get the test identity.
+const ENV: NodeJS.ProcessEnv = { ...process.env }
+for (const name of Object.keys(ENV)) {
+  if (name.startsWith('GIT_')) delete ENV[name]
+}
+ENV.GIT_CONFIG_GLOBAL = '/dev/null'
+ENV.GIT_CONFIG_NOSYSTEM = '1'
+
 function repoOnBranch(branch: string): string {
   const dir = mkdtempSync(join(tmpdir(), 'main-guard-'))
   temps.push(dir)
-  const git = (...args: string[]) => execFileSync('git', ['-C', dir, ...args], { stdio: 'pipe' })
+  const git = (...args: string[]) =>
+    execFileSync('git', ['-C', dir, ...args], { stdio: 'pipe', env: ENV })
   git('init', '--quiet', '--initial-branch', branch)
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'test')
@@ -45,6 +57,7 @@ function runHook(
       }),
       cwd,
       stdio: 'pipe',
+      env: ENV,
     })
     return 0
   } catch (err) {
@@ -147,7 +160,7 @@ describe('no-main-commit hook', () => {
       const dir = repoOnBranch('feat/some-scope')
       let code = 0
       try {
-        execFileSync('bash', [HOOK], { input: 'not json at all', cwd: dir, stdio: 'pipe' })
+        execFileSync('bash', [HOOK], { input: 'not json at all', cwd: dir, stdio: 'pipe', env: ENV })
       } catch (err) {
         code = (err as { status?: number }).status ?? 1
       }
