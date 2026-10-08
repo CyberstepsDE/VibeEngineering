@@ -28,11 +28,11 @@ author=${1:?$usage}
 base_ref=${2:?$usage}
 outcome=${3:?$usage}
 
-# Any author other than claude or codex (another agent, a person) is reviewed
-# like a Claude-written change: logic and security on Codex when it is there.
+# `other` is another agent or a person: neither tool wrote it, so either one is
+# an independent reviewer. Anything else is a typo, refused rather than guessed.
 case "$author" in
-  claude | codex) ;;
-  *) author=other ;;
+  claude | codex | other) ;;
+  *) echo "The author must be claude, codex or other (another agent or a person)." >&2; exit 1 ;;
 esac
 command -v jq >/dev/null 2>&1 || { echo "BLOCKED: jq is required (brew install jq, or apt install jq)." >&2; exit 1; }
 
@@ -87,10 +87,14 @@ run_pass() {
 }
 
 has() { command -v "$1" >/dev/null 2>&1; }
-other=codex
-[ "$author" = codex ] && other=claude
-logic_tool=$other
-has "$logic_tool" || logic_tool=$author
+if [ "$author" = other ]; then
+  logic_tool=codex
+  has codex || logic_tool=claude
+else
+  logic_tool=codex
+  [ "$author" = codex ] && logic_tool=claude
+  has "$logic_tool" || logic_tool=$author
+fi
 security_tool=codex
 has codex || security_tool=claude
 has "$logic_tool" || { echo "BLOCKED: neither claude nor codex is installed." >&2; exit 1; }
