@@ -62,8 +62,10 @@ if ! npm run verify > "$evidence/gate.txt" 2>&1; then
 fi
 
 deadline=${REVIEW_DEADLINE_SECONDS:-2400}
+# Reviewers get no standard input: the codex CLI reads stdin when it is not a
+# terminal, and a background run that inherits an open stdin can wait forever.
 run_with_deadline() {
-  "$@" &
+  "$@" < /dev/null &
   pid=$!
   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null ) &
   watchdog=$!
