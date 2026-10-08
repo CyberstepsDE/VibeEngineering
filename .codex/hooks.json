@@ -1,0 +1,16 @@
+{
+  "description": "Project guardrails for Codex. Codex runs project hooks only after you trust them once with /hooks (again after a hook changes).",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh \"$(git rev-parse --show-toplevel)/.claude/hooks/critical-thinking-reminder.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

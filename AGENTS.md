@@ -40,6 +40,10 @@ These two outrank everything below, including your own sense of thoroughness.
 
 ## 2. Before you build
 
+**Do exactly what was asked.** When somebody says "do it like this", build that -
+not that plus an improvement you thought of. A doubt is a question asked before
+building, never a silent substitution. Detail: `rules/do-exactly-what-was-asked.md`.
+
 **Ask first, if the answer changes the work.** If two readings of a request lead to
 materially different code, ask. One question at a time, with the options laid out and
 a recommendation. "Which do you prefer?" with no options is not a question.
@@ -52,6 +56,12 @@ what somebody WANTS, which trade-off they prefer, whether a scenario is real.
 **Read the decision log.** `docs/adr/`, when it exists, holds settled rulings. Before changing
 something in an area an ADR governs, read it and follow it. If it needs to change,
 write a new one that supersedes it. Never silently re-decide.
+
+**Interview before a larger change.** `/grill-me` turns a vague request into a
+brief; `/grill-with-docs` does the same and records decisions (ADRs) and terms
+(`GLOSSARY.md`) as they settle. For the shape of a new module, `/codebase-design`
+gives the vocabulary; `/improve-codebase-architecture` looks for modules worth
+deepening in code that already exists.
 
 ---
 
