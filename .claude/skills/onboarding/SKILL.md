@@ -39,8 +39,10 @@ a copy. Read a fact from its file when it matters instead of reciting this page.
   (`gh auth login`, `codex login`), which you open for them in a terminal. If they
   paste a secret anyway, tell them it is burned and must be replaced
   (`rules/secrets.md`).
-- **Nothing in this onboarding changes their project.** Your checks are read-only;
-  installing a missing tool happens only after they say yes.
+- **Nothing in this onboarding changes a tracked file or makes a commit.** Your
+  checks are read-only; installing a missing tool happens only after they say
+  yes. `npm ci` (run by `/start`) writes only `node_modules/` and the git setting
+  that switches on the hooks.
 - **Verify, do not assume** (`rules/facts-only.md`). When a check fails, show the
   output and fix the cause; never mark a station done on a failed check.
 - **If they stop halfway**, they run `/onboarding` again and name the station to
@@ -60,9 +62,6 @@ a copy. Read a fact from its file when it matters instead of reciting this page.
    stop and walk them through `docs/LAB.md` Stage 0 Step 1 ("Use this template"):
    a copy is theirs, with its own history and its own pipeline.
 4. Check the branch and state: `git branch --show-current`, `git status --short`.
-
-**Live example**: run `/start` and show what it reported, in its own words. The
-point: `/start` is how every session begins, and `/save` is how it ends.
 
 ## Station 1 - what this repository is
 
@@ -90,10 +89,12 @@ station where the person acts outside the chat, and only to log in.
 
 1. **You check the tools** and report a table (tool, why it is needed, version or
    "missing"): node (22.12 or newer, `.nvmrc`), npm, git, gh, jq, claude, codex,
-   and gitleaks (recommended). You install what is missing after saying what you
-   are about to install.
-2. **You run `npm ci`** if it has not run: it installs the toolchain and switches
-   on the git hooks in `.githooks/`.
+   and gitleaks (recommended). You install what is missing once they say yes,
+   naming what you are about to install and from where.
+2. **You run `/start`** once the tools are there: it runs `npm ci` (the toolchain,
+   and the git hooks in `.githooks/` switched on), then `npm run verify`, and
+   reports what it found. Explain the point: `/start` is how every session
+   begins, and `/save` is how it ends.
 3. **The person logs in once per tool**, typing their own credentials into the
    tool's prompt: GitHub (`gh auth login`), Codex (`codex login`), Claude Code.
    You verify each login with a read-only call and say what you see. Having BOTH
@@ -148,8 +149,9 @@ agent does" and "you see or decide":
    tests, build); they see a short report, not the raw output.
 4. Commit: the commit hook scans the change for secrets when gitleaks is installed.
 5. Review: `/review` runs two passes on the committed branch - logic on the tool
-   that did not write the change, security on Codex; NO-SHIP findings are fixed and
-   the review runs again. They see each verdict in plain words.
+   that did not write the change, security on Codex (on Claude when Codex wrote
+   it); NO-SHIP findings are fixed and the review runs again. They see each
+   verdict in plain words.
 6. Push and pull request: the push hook runs `npm run verify` again and warns when
    the commit has no two-SHIP review; on GitHub, CI runs three checks (`verify`,
    `secrets`, `browser`).
