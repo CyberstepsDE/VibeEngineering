@@ -86,8 +86,9 @@ write a new one that supersedes it. Never silently re-decide.
   that commit. A new commit needs a new review. Without a second tool both passes
   run on the one you have, and the record says so. It runs the branch's own
   `npm run verify` here, so use it on your own and your agents' work only, never
-  on a branch from somebody you do not trust. What a finding is worth, and
-  how to decline one: `rules/review-calibration.md`. Honesty about what holds
+  on a branch from somebody you do not trust - which is never even checked out,
+  because switching to a branch runs the git hooks it carries. What a finding
+  is worth, and how to decline one: `rules/review-calibration.md`. Honesty about what holds
   this: `.githooks/pre-push` WARNS when the pushed commit has no two-SHIP review;
   it never refuses. Merging unreviewed work is a choice, not an accident.
 - Two more agents are helpers, not gates: `.claude/agents/researcher.md` checks a

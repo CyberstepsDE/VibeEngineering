@@ -152,7 +152,9 @@ before merging:
 The verdicts are stored for the exact commit, outside the repository files; a new
 commit needs a new review. The script runs the branch's own checks on your machine,
 so it is for your own work and your agents' work. A pull request from somebody you
-do not trust is read on GitHub and checked by CI, never checked out and run locally.
+do not trust is read on GitHub and checked by CI, never checked out locally: with
+this repository's git hooks switched on, merely switching to a branch runs any
+hook it carries.
 
 Both passes return **SHIP** or **NO-SHIP** with findings. NO-SHIP findings go
 back to the author; the reviewer re-reads the fix. Two more agents help but gate

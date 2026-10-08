@@ -9,8 +9,8 @@
 #
 # TRUST: the script runs the branch's own `npm run verify` on this machine. Run it
 # on your own work and your own agents' work only. A branch from somebody you do
-# not trust (a pull request from a fork) is never checked out and run locally;
-# CI runs it on GitHub's machines without access to your secrets.
+# not trust (a pull request from a fork) is never checked out locally, because
+# switching to a branch runs the git hooks it carries; CI runs it on GitHub's machines without access to your secrets.
 #
 # Routing: the logic pass runs on the tool that did not write the change (Codex
 # for `claude` and `other`, Claude for `codex`), because a different model has

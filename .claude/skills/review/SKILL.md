@@ -11,10 +11,11 @@ Nothing merges on the word of the mind that wrote it. This runs both passes from
 ## Only on work you trust
 
 The script runs the branch's own `npm run verify` on this machine, with your
-permissions. Use it on your work and your agents' work. Never check out and run a
-branch from somebody you do not trust, such as a pull request from a fork: its
-code would run as you. CI checks those on GitHub's machines, without your secrets,
-and a person reads the diff before anything else.
+permissions. Use it on your work and your agents' work. Never check out a branch
+from somebody you do not trust, such as a pull request from a fork: switching to
+it already runs the git hooks it carries, and its code would run as you. CI
+checks those on GitHub's machines, without your secrets, and a person reads the
+diff before anything else.
 
 ## Step 1 - be reviewable
 

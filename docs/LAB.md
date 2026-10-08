@@ -390,7 +390,7 @@ and the record says so.
 The script runs the branch's own `npm run verify` on your machine, so use it
 only on your own work or your agents'. A branch from somebody you do not trust,
 such as a pull request from a fork, is read on GitHub and checked by CI, never
-checked out and run locally.
+checked out locally: switching to a branch already runs the git hooks it carries.
 
 **Done looks like:** both passes have said SHIP on the exact commit, after the
 script's own run of `npm run verify`, from minds that did not write the change.
