@@ -13,6 +13,12 @@ The skills below are copied unchanged from [mattpocock/skills](https://github.co
 
 To update one, copy the folder again from a newer commit and change the commit above. Local changes belong in this repository's own rules or skills, not in these copies, so an update never overwrites them.
 
+One exception: `diagnosing-bugs/scripts/hitl-loop.template.sh` carries a local
+security fix. Upstream reads only the first line of an answer, so a pasted
+multi-line error left its other lines for the person's shell to run (reproduced in
+a real terminal); the fixed script reads a paste to the end.
+`tests/hooks/hitl-loop-template.test.ts` pins it. Re-apply it after an update.
+
 ## Know before you use: the architecture report loads remote scripts
 
 `improve-codebase-architecture` writes its report as an HTML file in the temp

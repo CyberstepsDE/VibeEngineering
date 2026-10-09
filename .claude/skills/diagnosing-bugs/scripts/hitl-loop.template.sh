@@ -20,12 +20,18 @@ set -euo pipefail
 step() {
   printf '\n>>> %s\n' "$1"
   read -r -p "    [Enter when done] " _
+  # Swallow anything still queued, so nothing pasted here reaches the parent shell.
+  while IFS= read -r -t 1 _; do :; done
 }
 
 capture() {
   local var="$1" question="$2" answer
   printf '\n>>> %s\n' "$question"
   read -r -p "    > " answer
+  # A multi-line paste arrives line by line: keep reading until it stops, so the
+  # whole answer is captured and no line is left for the parent shell to run.
+  local more
+  while IFS= read -r -t 1 more; do answer="$answer $more"; done
   printf -v "$var" '%s' "$answer"
 }
 
