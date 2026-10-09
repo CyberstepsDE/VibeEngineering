@@ -171,7 +171,9 @@ this repository's git hooks switched on, merely switching to a branch runs any
 hook it carries.
 
 Both passes return **SHIP** or **NO-SHIP** with findings. NO-SHIP findings go
-back to the author; the reviewer re-reads the fix. Two more agents help but gate
+back to the author; the reviewer re-reads the fix. Both verdicts, and the reason
+for any declined finding, go where the merge is recorded: the pull request, or
+the merge commit message of a local project. Two more agents help but gate
 nothing: `researcher.md` checks a fact against the live source before it gets
 written down, and `ux-reviewer.md` walks a UI change as a person seeing the
 screen for the first time.

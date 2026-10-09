@@ -65,7 +65,8 @@ their experience.
    - No `origin`, or `origin` is the template's own repository
      (CyberstepsDE/VibeEngineering): a **local project**, the default. Everything
      happens on this machine; there is nothing to push, no pull request and no
-     server. A push to the template would be refused, and it is never needed.
+     server. The template's repository is not theirs to push to, and nothing
+     needs pushing.
    - `origin` is their own repository: a **project on GitHub** - pull requests
      and CI on top of the same local work.
 

@@ -41,9 +41,18 @@ Environment variables are set per environment (Production, Preview,
 Development), so Preview can serve as staging: give Preview its own secrets and
 its own data. Source: vercel.com/docs/environment-variables.
 
-First-time setup, all run by the agent: `npx vercel login` (the person confirms
-the sign-in in the browser), `npx vercel link`, `npx vercel git connect`.
-`docs/LAB.md` Stage 0, Steps 3 and 4 walk through it on a worked example.
+First-time setup, run by the agent: `npx vercel login` (the person confirms the
+sign-in in the browser), then `npx vercel link`. After that it depends on the
+project kind (`AGENTS.md` section 3):
+
+- **Local project** (no `origin` of their own): nothing is connected to git.
+  `npx vercel` deploys the current folder as a Preview, and `npx vercel --prod`
+  as Production, each run by the agent on the person's "go". Never run
+  `vercel git connect` here: it takes the repository from the local git config,
+  which would be the template's.
+- **Project on GitHub**: `npx vercel git connect` connects their own repository,
+  and from then on every push builds. `docs/LAB.md` Stage 0, Steps 3 and 4 walk
+  through this on a worked example.
 
 ## Other hosts
 

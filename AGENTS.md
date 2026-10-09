@@ -112,9 +112,11 @@ deepening in code that already exists.
   fact against the live source before it gets written down, and
   `.claude/agents/ux-reviewer.md` walks a UI change as a person seeing the screen
   for the first time.
-- Merge after both SHIPs and the person's "go". Where the merge happens depends on
-  what kind of project this is; read it from the repository, never ask them to
-  clone or download anything again:
+- Merge after both SHIPs and the person's "go". Both verdict lines, and the
+  reason for every declined finding, go where the merge is recorded: the pull
+  request, or the merge commit message of a local project. Where the merge
+  happens depends on what kind of project this is; read it from the repository,
+  never ask them to clone or download anything again:
   - **Local project** (the default: no `origin`, or `origin` is the template's
     own repository): merge the branch into `main` on this machine
     (`git merge --no-ff <branch>`). No push, no pull request, no CI, no server,
