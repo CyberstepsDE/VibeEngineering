@@ -22,16 +22,18 @@ and it costs minutes instead of days.
 **Open by stating the request back in one sentence**, as you understood it. If it is
 already wrong, you learn that immediately and for free.
 
-**Then ask, hardest first, no more than three at a time.** Every question must be
-concrete and answerable. "Which of these two things should happen when the queue is
-empty?" is a question. "Any preferences?" is not.
+**Then ask, hardest first, one question per message**, and wait for the answer
+before the next (`AGENTS.md` section 2). Every question must be concrete and
+answerable, with the options laid out and your recommendation. "Which of these two
+things should happen when the queue is empty?" is a question. "Any preferences?" is
+not.
 
-**Every round must include at least one thing they did not raise**, with your
-recommendation attached. That is the part that earns this skill its cost.
+**Among your questions, raise things they did not**, with your recommendation
+attached. That is the part that earns this skill its cost.
 
-**After each round, say back what you now understand, in two or three lines.** A
-wrong restatement is the most valuable thing you can produce - it lets them correct
-you before it becomes code.
+**When an answer changes the picture, say back what you now understand, in two or
+three lines.** A wrong restatement is the most valuable thing you can produce - it
+lets them correct you before it becomes code.
 
 **Do not build, design or write code during the interview.** Proposals are allowed
 only as options inside a question.
