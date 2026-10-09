@@ -7,9 +7,10 @@
 ## Local first
 
 Every project made from this template starts local: the app runs on the person's
-machine, changes are reviewed and merged into `main` on that machine, and secrets
-live only in `.env`. There is no server, no staging and no pipeline to set up.
-That is a complete way to work, not a stage to rush through.
+machine and secrets live only in `.env`. A local project reviews and merges into
+`main` on that machine; a project on GitHub adds pull requests and CI
+(`AGENTS.md` section 3). Neither needs a server, staging or a deploy pipeline,
+and that is a complete way to work, not a stage to rush through.
 
 Never connect a host, create cloud resources, add a remote or deploy unless the
 person asked for it. Each of those is their decision, made when they want it.
@@ -25,7 +26,9 @@ person asked for it. Each of those is their decision, made when they want it.
    and its own data, never the production database. A change reaches production
    only after it was seen working there.
 3. **Secrets live in the host's settings**, separately for staging and
-   production, never in the repository (`rules/secrets.md`).
+   production, never in the repository and never in what gets uploaded: a host
+   that deploys a local folder from its CLI is told to leave `.env` out
+   (`rules/secrets.md`).
 4. **Production changes only on the person's explicit "go".**
 5. **After a deploy, check what is actually running**: the address responds, and
    it serves the version you meant to ship (`rules/what-checks-prove.md`).
@@ -45,9 +48,16 @@ First-time setup, run by the agent: `npx vercel login` (the person confirms the
 sign-in in the browser), then `npx vercel link`. After that it depends on the
 project kind (`AGENTS.md` section 3):
 
-- **Local project** (no `origin` of their own): nothing is connected to git.
-  `npx vercel` deploys the current folder as a Preview, and `npx vercel --prod`
-  as Production, each run by the agent on the person's "go". Never run
+- **Local project** (no `origin` of their own): nothing is connected to git, and
+  the CLI uploads the folder itself. Before the first upload, create a
+  `.vercelignore` with the lines `.env` and `.env.*`: Vercel skips only
+  `.env.local` and `.env.*.local` by default, so a plain `.env` would be sent
+  (vercel.com/docs/deployments/build-features). Its secrets go into the
+  project's environment variables instead. The first deployment of a new
+  project is Production even without `--prod`
+  (vercel.com/docs/projects/deploy-from-cli), so the first `npx vercel deploy`
+  needs the person's production "go"; after that `npx vercel deploy` makes a
+  Preview and `npx vercel deploy --prod` Production. Never run
   `vercel git connect` here: it takes the repository from the local git config,
   which would be the template's.
 - **Project on GitHub**: `npx vercel git connect` connects their own repository,

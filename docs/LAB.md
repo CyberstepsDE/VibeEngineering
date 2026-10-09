@@ -133,8 +133,8 @@ Watch the road, in order:
    address shows the change.
 
 Say the rule out loud once: **every push builds a preview; a merge to `main`
-builds production.** It holds for the rest of the lab, and for every project
-after it.
+builds production.** It holds for the rest of the lab, and for any project that
+takes the same GitHub and Vercel path.
 
 **Done looks like:** the new title is live at the production address, and you
 watched it pass the preview and all three green checks on the way there.
