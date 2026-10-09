@@ -47,7 +47,8 @@ for another agent or a person working in this repository. The script:
 
 If the other tool is not installed, both passes run on the one you have. When
 that tool also wrote the change, the manifest says `same-tool`: weaker than an
-independent review, so say so in the pull request. For an `other` author it
+independent review, so say so where the merge is recorded (the pull request, or
+the merge commit message of a local project). For an `other` author it
 still says `independent`, because neither pass ran on the author. With neither
 tool available, open a fresh agent session on the branch and run the `reviewer`,
 then the `security-reviewer` agent by hand.
@@ -58,11 +59,14 @@ model is not available to your account: set `REVIEW_CODEX_MODEL` or
 
 ## Step 3 - act on the verdicts
 
-- **Both SHIP**: put both verdict lines and the evidence path in the pull request,
-  mark it ready, merge after CI is green.
+- **Both SHIP**: merge on the person's "go". A local project merges the branch
+  into `main` on this machine, with both verdict lines in the merge commit
+  message. A project on GitHub puts both verdict lines and the evidence path in
+  the pull request, marks it ready and merges after CI is green.
 - **NO-SHIP**: read every finding. Fix the real ones; a new commit has a new SHA,
   so run the review again - the old verdicts no longer apply.
-- **Decline a finding only with a reason**, written in the pull request: it is
+- **Decline a finding only with a reason**, written where the merge is recorded
+  (the pull request, or a local project's merge commit message): it is
   theoretical (nobody can reach it), the cost is a reversible inconvenience, or it
   asks for machinery nobody needs. See `rules/review-calibration.md`. A declined
   finding is a decision, not an oversight.

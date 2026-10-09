@@ -7,6 +7,10 @@ person driving on a shared screen. You start from an empty folder. Stage 0 mints
 your own repository and proves a living deploy pipeline **before any code
 exists**; stages 1 to 7 build the app on top of it.
 
+This lab is one worked example, and it goes online with GitHub and Vercel from
+the start. The template itself is local first and works with any host
+(`docs/DEPLOYMENT.md`); a project of your own needs neither.
+
 **How this file relates to the deck:** the slides are the frame - the route map,
 the watch-list, the traps. This file is the full step-by-step reference route:
 every stage, every request word for word, every "done looks like". When a live

@@ -62,7 +62,8 @@ Every tracked file, and why it is there:
 │   ├── workflows/ci.yml               - CI: typecheck, lint, test, build, audit and a secret scan on every pull request
 │   └── pull_request_template.md       - what a pull request here must say
 ├── docs/
-│   └── LAB.md                         - the hands-on lab: build a real app on this template, stage by stage
+│   ├── DEPLOYMENT.md                  - for the agent: putting a project online, when the person wants it (any host)
+│   └── LAB.md                         - a worked example: one app built stage by stage, taken online with Vercel
 ├── src/                               - the application (today: a one-page placeholder to delete)
 │   ├── main.tsx
 │   ├── ui/App.tsx
@@ -86,7 +87,8 @@ Three words worth defining once:
 - **Skill** - a routine in `.claude/skills/` you trigger by typing its name, like
   `/start`. It is instructions in plain English for the agent, not a program.
 - **CI** (Continuous Integration) - a robot on GitHub that repeats the same checks
-  on every change, so nobody has to remember to run them by hand.
+  on every pull request, so nobody has to remember to run them by hand. It runs
+  only once the project is on GitHub; a local project has none.
 
 ## Requirements
 
@@ -100,45 +102,46 @@ Three words worth defining once:
 - Recommended: [gitleaks](https://github.com/gitleaks/gitleaks), so a secret is
   caught on your machine before it is pushed (`brew install gitleaks`). Without it
   the commit hook warns and CI still scans.
-- A [GitHub](https://github.com) account, for your own copy and for CI.
+- Optional: a [GitHub](https://github.com) account, once you want the project on
+  GitHub (pull requests and CI). A local project needs none.
 
 ## How to use it, step by step
 
-1. **Click "Use this template" -> "Create a new repository"** (green button, top
-   right) and give your copy a name. This creates a CLEAN repository that is
-   fully yours: you push to it, its CI runs for you, and its history starts at
-   commit one. (A fork also works, but forks are for sending changes BACK to
-   this template - your own projects deserve their own history. Note: your copy
-   contains only the main branch; the worked `example` branch stays browsable
-   here on the template.)
-2. **Clone your own new repository**, not this template:
+1. **Get a copy onto your machine** with git, one folder per project:
    ```bash
-   git clone <your-repository's-URL>
-   cd <repository-folder-name>
+   git clone https://github.com/CyberstepsDE/VibeEngineering.git my-project
    ```
-3. **Open the folder in your AI coding agent.** The project's dependencies are
+   That is all a local project needs. If you want the project on GitHub from
+   the start, press "Use this template" -> "Create a new repository" instead and
+   clone your new repository; later works too, the agent can connect it for you.
+2. **Open the folder in your AI coding agent.** The project's dependencies are
    installed by the agent, not typed by you.
-4. **Type `/onboarding` the first time** - the agent walks you through the setup
+3. **Type `/onboarding` the first time** - the agent walks you through the setup
    and the way of working, one step at a time. After that, **start every session
    with `/start`.** It installs the dependencies (`npm ci`, which also switches on
    the git hooks in `.githooks/`), reads `AGENTS.md`, checks that the project
    still runs, and reports what it found instead of guessing.
-5. **Work.** Tell the agent in your own words what you want to build. It will
+4. **Work.** Tell the agent in your own words what you want to build. It will
    interview you before writing code (`/grill-me` forces this when it does not
    happen on its own). Work lands on a branch, gets reviewed (next section), and
-   merges through a pull request. `docs/LAB.md` is a guided first project if you
-   want one.
+   merges into `main`: on your machine for a local project, through a pull
+   request once the project is on GitHub.
+5. **Online, only when you want it.** A local project needs no server and no
+   staging. When you decide to put it online, the agent follows
+   `docs/DEPLOYMENT.md`: you choose the host, and a project people rely on gets
+   a staging environment before production.
 
-For the next idea, come back here and press "Use this template" again - every
-copy starts clean. The rules, agents and checks come with it; `src/` and
-`tests/` are placeholders you replace. `docs/LAB.md` walks the whole road once:
-own repo, live pipeline, an app built in stages, review, merge, production.
+For the next idea, start again from a fresh copy - every project gets its own
+folder and history. The rules, agents and checks come with it; `src/` and
+`tests/` are placeholders you replace. `docs/LAB.md` is one worked example that
+builds an app stage by stage and takes it online with GitHub and Vercel; your
+own project needs neither.
 
 ## The two review passes
 
-Nothing merges here on the word of the mind that wrote it. Before a pull request
-merges, the change gets **two review passes**, each by a reviewer that did not
-write the code:
+Nothing merges here on the word of the mind that wrote it. Before a change
+merges, it gets **two review passes**, each by a reviewer that did not write
+the code:
 
 1. **Logic** - does the change do the right thing, and what did the author not
    think to check.
@@ -182,10 +185,10 @@ Honesty about which rules have teeth:
 | --- | --- | --- |
 | No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
 | No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks (in a git checkout; a ZIP download has no git and no hooks). `git push --no-verify` skips it. |
-| `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. When the pushed commit is another branch or the tree has uncommitted or untracked files, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
+| `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. A local project never pushes, so there the agent runs `npm run verify` before each commit instead. When the pushed commit is another branch or the tree has uncommitted or untracked files, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
 | No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns, and `git commit --no-verify` skips it. CI scans the whole history on every pull request - but a secret that reached GitHub is already exposed and must be replaced. |
 | Two review passes before merge | `scripts/review.sh` records verdicts; `.githooks/pre-push` checks them | **Warns only.** It never blocks. Merging unreviewed work is a choice you make, not something the tooling prevents. |
-| `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
+| `npm run verify` green on every change | `.github/workflows/ci.yml` runs it on every pull request | **Runs server-side, once the project is on GitHub; a local project has no CI.** A red check is a visible signal on the PR; whether it may merge anyway depends on your repository's branch protection settings. |
 | Load context before acting | SessionStart hook prints "run /start first" | **Reminds only.** |
 | Think before changing anything | A short reminder on every message, in Claude Code (`settings.json`) and Codex (`.codex/hooks.json`) | **Reminds only.** Codex runs it after you trust the project's hooks once with `/hooks`. |
 | No force push | `.claude/settings.json` denies `git push --force ...` | **Blocks in Claude Code**, for that spelling only. `--force-with-lease` (your own branch, after a rebase) stays allowed. |
