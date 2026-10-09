@@ -98,7 +98,37 @@ what displays it, what reports on it, what checks permission on it.
 READING broadly, never about writing more. `less-is-more.md` still gates every line
 you add.
 
+## I. Fix a bug at its cause, once
+
+Before you change the code a bug runs through, find every caller of it (search for
+the function's name). Then fix the cause in the shared code, once. A fix at the one
+call site that was reported leaves the same bug waiting for the next caller.
+`/diagnosing-bugs` finds the cause; this is where the fix lands.
+
+## J. New logic leaves one small test
+
+A new piece of logic that decides something - a branch, a loop, a parser, anything
+touching money, permissions or security - leaves one small test that fails without
+it. A trivial change (copy, styling, a rename) needs none. This is not "test first,
+always"; it is the cheapest proof that the new decision does what it says, and the
+thing that stops it quietly breaking later.
+
+## K. Mark a deliberate shortcut
+
+When you take a shortcut with a known limit on purpose, say so where it lives, in one
+form:
+
+```ts
+// shortcut: loads every report at once; paginate past about 1,000 reports
+```
+
+The limit, and when to revisit it. `grep -rn "shortcut:" src tests` lists them all,
+so "later" does not quietly become "never"; `/save` names any added in the session.
+A shortcut nobody marked is a bug waiting for its date.
+
 ## Related
 
 `less-is-more.md` runs first, always. `what-checks-prove.md` for the evidence that
-the shape actually works.
+the shape actually works. Sections I to K adapt three ideas from
+[ponytail](https://github.com/dietrichgebert/ponytail) (MIT), in this repository's
+own words.

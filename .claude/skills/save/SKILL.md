@@ -40,6 +40,7 @@ the history.
 - What was verified, and how. Name the command and its result.
 - What was NOT verified, and why not.
 - What is unfinished, and what the next step is.
+- Shortcuts added this session (`shortcut:` comments, `rules/coding-standards.md` K).
 - Anything that surprised you.
 ```
 
