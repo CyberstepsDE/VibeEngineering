@@ -41,5 +41,6 @@ execute is a note.
 
 ## Declining is a decision
 
-When the author declines a finding, the reason goes in the pull request: which
-of the cases above it is. Silence is not a decision.
+When the author declines a finding, the reason goes where the merge is recorded
+(the pull request, or the merge commit message of a local project): which of the
+cases above it is. Silence is not a decision.

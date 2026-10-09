@@ -23,7 +23,7 @@ will remember nothing - can pick up where you left off.
 
 Somebody new to this template? `/onboarding` walks them through it once: who does
 what between them and the agent, the one-time setup, how a change travels from an
-idea to production, and the security habits.
+idea to a merge, and the security habits.
 
 ---
 
@@ -85,7 +85,7 @@ deepening in code that already exists.
   installed. Both are enabled by `npm ci` in a git checkout (not in a copy
   downloaded as a ZIP), and `--no-verify` on a commit or a push
   skips them - a decision, never a habit.
-- Open a pull request. Before it merges, the change gets **TWO review passes**, each
+- Before a change merges, it gets **TWO review passes**, each
   by a mind that did not write it. An author checks whether the code does what they
   intended; a reviewer checks whether the intention was right. One mind does not ask
   both questions at once.
@@ -112,7 +112,25 @@ deepening in code that already exists.
   fact against the live source before it gets written down, and
   `.claude/agents/ux-reviewer.md` walks a UI change as a person seeing the screen
   for the first time.
-- Merge, then verify the running result, not the pipeline's opinion of it.
+- Merge after both SHIPs and the person's "go". Both verdict lines, and the
+  reason for every declined finding, go where the merge is recorded: the pull
+  request, or the merge commit message of a local project. Where the merge
+  happens depends on what kind of project this is; read it from the repository,
+  never ask them to clone or download anything again:
+  - **Local project** (the default: no `origin`, or `origin` is the template's
+    own repository): merge the branch into `main` on this machine
+    (`git merge --no-ff <branch>`). No push, no pull request, no CI, no server,
+    no staging. Nothing is pushed, so `.githooks/pre-push` never runs here:
+    `npm run verify` before each commit and `/review` before each merge are the
+    gates.
+  - **Project on GitHub** (`origin` is the person's own repository): push the
+    branch and open a pull request; CI runs the same checks there; merge after
+    green checks.
+  - **Project online**: only when the person asks for it. `docs/DEPLOYMENT.md`
+    holds the rules that do not depend on the host (a project people rely on
+    gets staging before production) and the per-host notes, Vercel being one
+    option among many.
+- Then verify the running result, not the pipeline's opinion of it.
 
 **A green pipeline proves the assertions somebody wrote. It says nothing about the
 behaviours nobody thought to assert.** See `rules/what-checks-prove.md`.
