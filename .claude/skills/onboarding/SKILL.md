@@ -89,7 +89,8 @@ and 8.
 3. **Two gates come first**: LESS IS MORE (nothing unnecessary) and FACTS ONLY (no
    claim without a source). Everything else ranks below them.
 4. **Skills** are named routines they can call: `/start`, `/save`, `/grill-me`,
-   `/cross-review`, `/grill-with-docs`, `/codebase-design` and this one.
+   `/cross-review`, `/diagnosing-bugs`, `/grill-with-docs`, `/codebase-design`
+   and this one.
 5. **Any application, local first.** The template does not care what they build
    or where it will run. The finished example lives on the template's `example`
    branch; `docs/LAB.md` is one worked project that goes online with GitHub and
