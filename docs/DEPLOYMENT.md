@@ -27,8 +27,8 @@ person asked for it. Each of those is their decision, made when they want it.
    only after it was seen working there.
 3. **Secrets live in the host's settings**, separately for staging and
    production, never in the repository and never in what gets uploaded: a host
-   that deploys a local folder from its CLI is told to leave `.env` out
-   (`rules/secrets.md`).
+   that deploys a local folder from its CLI is told to leave out everything git
+   leaves out (`rules/secrets.md`).
 4. **Production changes only on the person's explicit "go".**
 5. **After a deploy, check what is actually running**: the address responds, and
    it serves the version you meant to ship (`rules/what-checks-prove.md`).
@@ -49,11 +49,12 @@ sign-in in the browser), then `npx vercel link`. After that it depends on the
 project kind (`AGENTS.md` section 3):
 
 - **Local project** (no `origin` of their own): nothing is connected to git, and
-  the CLI uploads the folder itself. Before the first upload, create a
-  `.vercelignore` with the lines `.env` and `.env.*`: Vercel skips only
-  `.env.local` and `.env.*.local` by default, so a plain `.env` would be sent
-  (vercel.com/docs/deployments/build-features). Its secrets go into the
-  project's environment variables instead. The first deployment of a new
+  the CLI uploads the folder itself. Before the first upload, copy `.gitignore`
+  to `.vercelignore` and keep the two in step: what never goes into git (`.env`,
+  test reports, logs, local agent settings) never goes to the host either.
+  Vercel skips only a fixed list by default, which has `.env.local` but not a
+  plain `.env` (vercel.com/docs/deployments/build-features). The secrets go into
+  the project's environment variables instead. The first deployment of a new
   project is Production even without `--prod`
   (vercel.com/docs/projects/deploy-from-cli), so the first `npx vercel deploy`
   needs the person's production "go"; after that `npx vercel deploy` makes a
