@@ -29,7 +29,7 @@ Every tracked file, and why it is there:
 │   ├── review-calibration.md          - what a review finding is worth, and how to decline one
 │   └── what-checks-prove.md           - what a green check does and does not tell you
 ├── .claude/
-│   ├── settings.json                  - hook wiring (session reminder, commit guard, critical-thinking reminder), force-push denied
+│   ├── settings.json                  - hook wiring (session reminder, commit guard, config guard, critical-thinking reminder), force-push denied
 │   ├── agents/                        - the team of subagents
 │   │   ├── reviewer.md                - review pass 1 of 2: attacks the logic
 │   │   ├── security-reviewer.md       - review pass 2 of 2: security holes only
@@ -37,6 +37,7 @@ Every tracked file, and why it is there:
 │   │   └── ux-reviewer.md             - walks a UI change as a first-time user
 │   ├── hooks/
 │   │   ├── no-main-commit.sh          - blocks a commit on the main branch (Claude Code only)
+│   │   ├── config-guard.sh            - asks you before the agent changes a file that defines a check (Claude Code only)
 │   │   └── critical-thinking-reminder.sh - a short reminder on every message (Claude Code and Codex)
 │   └── skills/                        - named routines you trigger by typing their name
 │       ├── onboarding/SKILL.md        - /onboarding: a guided first session for somebody new here
@@ -71,7 +72,7 @@ Every tracked file, and why it is there:
 ├── tests/                             - one placeholder test per harness, named as something to delete
 │   ├── placeholder.test.ts            - unit (Vitest)
 │   ├── placeholder.browser.test.ts    - browser (Playwright)
-│   └── hooks/                         - fixtures for the commit guard, the push hook and the verdict reader; keep them
+│   └── hooks/                         - fixtures for the commit guard, the config guard, the push hook and the verdict reader; keep them
 ├── index.html, vite.config.ts         - Vite app shell
 ├── tsconfig*.json, eslint.config.js   - TypeScript strict + ESLint, zero warnings allowed
 ├── playwright.config.ts               - browser test setup
@@ -186,6 +187,7 @@ Honesty about which rules have teeth:
 | Rule | What actually holds it | Honest label |
 | --- | --- | --- |
 | No commit on `main` | `.claude/hooks/no-main-commit.sh` exits 2 | **Blocks, in Claude Code only.** Codex, Cursor and a human terminal never run it. It fails open on any parse error, by design. |
+| No quiet weakening of a check | `.claude/hooks/config-guard.sh` answers "ask" | **Asks you, in Claude Code only**, before the Write or Edit tool changes a file that defines a check: lint, TypeScript, Vite/Vitest, Playwright, Prettier, gitleaks, `.nvmrc`, CI workflows, `.githooks/`, the review scripts, and the agent's own hooks and settings. A shell command that edits them is not seen, Codex and a human terminal never run it, and without jq it lets everything through. `package.json` is left out: it changes with every dependency. |
 | No push to `main` | `.githooks/pre-push` | **Blocks, for every tool**, once `npm ci` has enabled the hooks (in a git checkout; a ZIP download has no git and no hooks). `git push --no-verify` skips it. |
 | `npm run verify` green before a push | `.githooks/pre-push` | **Blocks** a red commit when it is your clean checkout. A local project never pushes, so there the agent runs `npm run verify` before each commit instead. When the pushed commit is another branch or the tree has uncommitted or untracked files, it prints NOT VERIFIED and lets the push through; CI runs the same check on the pull request. Same `--no-verify` caveat. |
 | No secret in a commit | `.githooks/pre-commit` (gitleaks) and the CI `secrets` job | **Blocks locally only when gitleaks is installed**; otherwise it warns, and `git commit --no-verify` skips it. CI scans the whole history on every pull request - but a secret that reached GitHub is already exposed and must be replaced. |
