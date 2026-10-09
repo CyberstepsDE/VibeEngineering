@@ -20,7 +20,10 @@ diff before anything else.
 ## Step 1 - be reviewable
 
 - Every change is committed. A review is of a commit, not of a working tree.
-- The branch is rebased on the current `origin/main`.
+- The branch is rebased on the current `<base>`: `main` for a local project (no
+  `origin`, or `origin` is the template itself), `origin/main` after a fetch for a
+  project on GitHub. The base decides what the reviewers read: only the commits
+  between it and your branch.
 - Write the **outcome** in one sentence, as the user would see it: "A visitor who
   submits an empty form sees which field is missing and nothing is saved." The
   reviewers judge the outcome first and the code second, so a vague outcome buys
@@ -31,7 +34,7 @@ diff before anything else.
 ## Step 2 - run both passes
 
 ```bash
-scripts/review.sh <claude|codex|other> origin/main "<the outcome sentence>"
+scripts/review.sh <claude|codex|other> <base> "<the outcome sentence>"
 ```
 
 The first argument names who WROTE the change: `claude`, `codex`, or `other`
