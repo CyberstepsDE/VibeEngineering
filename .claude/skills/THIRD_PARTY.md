@@ -13,12 +13,14 @@ The skills below are copied unchanged from [mattpocock/skills](https://github.co
 
 To update one, copy the folder again from a newer commit and change the commit above. Local changes belong in this repository's own rules or skills, not in these copies, so an update never overwrites them.
 
-One exception: `diagnosing-bugs/scripts/hitl-loop.template.sh` carries a local
-security fix. Upstream reads only the first line of an answer, so a pasted
-multi-line error left its other lines for the person's shell to run (reproduced in
-a real terminal, with and without a final Enter); the fixed script reads the rest
-of a paste character by character.
-`tests/hooks/hitl-loop-template.test.ts` pins it. Re-apply it after an update.
+One exception: `diagnosing-bugs` is copied without upstream's
+`scripts/hitl-loop.template.sh`, and two lines of its `SKILL.md` (step 10 and the
+"Agent-runnable" criterion) say to guide the person step by step in the chat
+instead. That script had the person paste answers into their own terminal, and
+pasted text could run as commands in their shell: a multi-line paste, a paste
+without a final Enter and a Ctrl-D each did, in a real terminal or by the
+terminal's rules. Text pasted into the chat is only data. Re-apply this after an
+update.
 
 ## Know before you use: the architecture report loads remote scripts
 
