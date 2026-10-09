@@ -73,7 +73,7 @@ deepening in code that already exists.
 **Debug with a loop, not a theory.** When something is broken, failing or slow,
 `/diagnosing-bugs` first builds one command that reproduces the exact symptom,
 then ranks hypotheses, changes one thing at a time, and lands the fix with a
-regression test.
+regression test wherever a test can reach the bug (when none can, it says so).
 
 ---
 

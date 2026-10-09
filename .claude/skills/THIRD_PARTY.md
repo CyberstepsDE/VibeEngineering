@@ -16,7 +16,8 @@ To update one, copy the folder again from a newer commit and change the commit a
 One exception: `diagnosing-bugs/scripts/hitl-loop.template.sh` carries a local
 security fix. Upstream reads only the first line of an answer, so a pasted
 multi-line error left its other lines for the person's shell to run (reproduced in
-a real terminal); the fixed script reads a paste to the end.
+a real terminal, with and without a final Enter); the fixed script reads the rest
+of a paste character by character.
 `tests/hooks/hitl-loop-template.test.ts` pins it. Re-apply it after an update.
 
 ## Know before you use: the architecture report loads remote scripts

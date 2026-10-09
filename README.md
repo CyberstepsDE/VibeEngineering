@@ -48,7 +48,7 @@ Every tracked file, and why it is there:
 │       ├── codebase-design/           - vocabulary for designing deep modules
 │       ├── domain-modeling/           - glossary and decision records
 │       ├── improve-codebase-architecture/ - find modules worth deepening
-│       ├── diagnosing-bugs/           - a reproducible failing loop before any theory, then fix + regression test
+│       ├── diagnosing-bugs/           - a reproducible failing loop before any theory, then the fix, with a regression test where one can reach the bug
 │       └── THIRD_PARTY.md             - the six skills above come from mattpocock/skills (MIT)
 ├── .agents                            - a symlink to .claude, so other agent tools find the same config
 ├── .codex/hooks.json                  - the same critical-thinking reminder for Codex (trust it once with /hooks)
