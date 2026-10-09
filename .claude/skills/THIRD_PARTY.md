@@ -5,6 +5,7 @@ The skills below are copied unchanged from [mattpocock/skills](https://github.co
 | Skill | Upstream path |
 | --- | --- |
 | `codebase-design` | `skills/engineering/codebase-design/` |
+| `diagnosing-bugs` | `skills/engineering/diagnosing-bugs/` |
 | `domain-modeling` | `skills/engineering/domain-modeling/` |
 | `grill-with-docs` | `skills/engineering/grill-with-docs/` |
 | `improve-codebase-architecture` | `skills/engineering/improve-codebase-architecture/` |
