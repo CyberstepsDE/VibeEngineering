@@ -36,6 +36,8 @@ describe('config-guard asks before a check changes', () => {
     '/work/app/.codex/hooks.json',
     '/work/app/scripts/review.sh',
     '.githooks/pre-commit',
+    'C:\\work\\app\\eslint.config.js',
+    'C:\\work\\app\\.github\\workflows\\ci.yml',
   ])('asks for %s', (file) => {
     expect(decision({ file_path: file, old_string: 'a', new_string: 'b' })).toBe('ask')
   })
@@ -58,6 +60,7 @@ describe('config-guard stays silent for ordinary work', () => {
     '/work/app/README.md',
     '/work/app/tests/smoke.test.ts',
     '/work/app/docs/eslint-notes.md',
+    'C:\\work\\app\\src\\main.ts',
   ])('says nothing for %s', (file) => {
     expect(decision({ file_path: file, content: 'x' })).toBe('silent')
   })

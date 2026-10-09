@@ -17,6 +17,8 @@
 command -v jq >/dev/null 2>&1 || exit 0
 path=$(jq -r '.tool_input.file_path // empty' 2>/dev/null) || exit 0
 [ -n "$path" ] || exit 0
+# Claude Code on Windows sends backslash-separated paths; match them the same way.
+path=$(printf '%s' "$path" | tr '\\' '/')
 
 guarded=0
 case "$path" in
