@@ -74,5 +74,5 @@ is the single most expensive mistake available to you, and it is free to avoid.
 
 ## Related
 
-`/onboarding` the first time. `/grill-me` before building. `/review` before
+`/onboarding` the first time. `/grill-me` before building. `/cross-review` before
 merging. `/save` when you finish.

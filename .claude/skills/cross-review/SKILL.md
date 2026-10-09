@@ -1,9 +1,13 @@
 ---
-name: review
+name: cross-review
 description: Run the two review passes (logic, security) on the committed branch before it merges, by a mind that did not write it - Codex for Claude-written work and the other way round. Use after committing and before marking a pull request ready or merging it, and again after every fix.
 ---
 
-# /review - two passes before the merge
+# /cross-review - two passes before the merge
+
+The name is not `/review` on purpose: in Claude Code `/review` is an alias of the
+built-in `/code-review`, and a project skill never receives a built-in alias
+(code.claude.com/docs/en/skills, "Resolve skills that share a name").
 
 Nothing merges on the word of the mind that wrote it. This runs both passes from
 `AGENTS.md` section 3 on the exact commit you are about to merge.

@@ -89,7 +89,7 @@ and 8.
 3. **Two gates come first**: LESS IS MORE (nothing unnecessary) and FACTS ONLY (no
    claim without a source). Everything else ranks below them.
 4. **Skills** are named routines they can call: `/start`, `/save`, `/grill-me`,
-   `/review`, `/grill-with-docs`, `/codebase-design` and this one.
+   `/cross-review`, `/grill-with-docs`, `/codebase-design` and this one.
 5. **Any application, local first.** The template does not care what they build
    or where it will run. The finished example lives on the template's `example`
    branch; `docs/LAB.md` is one worked project that goes online with GitHub and
@@ -154,7 +154,7 @@ What they should GIVE the agent:
 
 ## Station 4 - the path of a change, and who does what
 
-Read `AGENTS.md` section 3, `.claude/skills/review/SKILL.md` and `README.md` ("What
+Read `AGENTS.md` section 3, `.claude/skills/cross-review/SKILL.md` and `README.md` ("What
 is enforced, and what is convention"). Present it as a table with two columns, "the
 agent does" and "you see or decide":
 
@@ -165,7 +165,7 @@ agent does" and "you see or decide":
 3. Build: the agent changes the code and runs `npm run verify` (typecheck, lint,
    tests, build); they see a short report, not the raw output.
 4. Commit: the commit hook scans the change for secrets when gitleaks is installed.
-5. Review: `/review` runs two passes on the committed branch - logic on the tool
+5. Review: `/cross-review` runs two passes on the committed branch - logic on the tool
    that did not write the change, security on Codex (on Claude when Codex wrote
    it); NO-SHIP findings are fixed and the review runs again. They see each
    verdict in plain words.

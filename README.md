@@ -42,7 +42,7 @@ Every tracked file, and why it is there:
 │       ├── onboarding/SKILL.md        - /onboarding: a guided first session for somebody new here
 │       ├── start/SKILL.md             - /start: load context before acting
 │       ├── grill-me/SKILL.md          - /grill-me: the agent interviews you before building
-│       ├── review/SKILL.md            - /review: the two review passes on the committed branch
+│       ├── cross-review/SKILL.md      - /cross-review: the two review passes on the committed branch
 │       ├── save/SKILL.md              - /save: write down what happened for the next session
 │       ├── grill-with-docs/, grilling/ - interview that also records decisions and terms
 │       ├── codebase-design/           - vocabulary for designing deep modules
@@ -149,7 +149,7 @@ the code:
    unescaped, a secret in code or config, data sent where the user did not ask,
    a public endpoint a stranger could abuse.
 
-Run them with `/review` (the script `scripts/review.sh`), after committing and
+Run them with `/cross-review` (the script `scripts/review.sh`), after committing and
 before merging:
 
 - **With both Claude Code and Codex**, the logic pass runs on the tool that did
