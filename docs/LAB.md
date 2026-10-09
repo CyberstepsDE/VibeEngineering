@@ -382,7 +382,7 @@ More powers:
 The branch is pushed and its preview works. Nothing MERGES until minds that did
 not write the change say SHIP - both of them.
 
-**Ask the agent:** "run /review". It runs the two passes from `AGENTS.md`
+**Ask the agent:** "run /cross-review". It runs the two passes from `AGENTS.md`
 section 3 on the committed branch: the logic pass on the tool that did NOT write
 the change (Codex, when Claude wrote it), the security pass on Codex (on Claude
 when Codex wrote it) - a different model has different blind spots. Each pass

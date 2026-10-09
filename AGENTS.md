@@ -95,7 +95,7 @@ deepening in code that already exists.
      a secret in code or config, data sent where the user did not ask, a public
      endpoint a stranger could abuse.
 
-  Run both with `/review` (`scripts/review.sh`). It runs the logic pass on the
+  Run both with `/cross-review` (`scripts/review.sh`). It runs the logic pass on the
   tool that did NOT write the change (Codex for Claude-written work, Claude for
   Codex-written work) and the security pass on Codex (on Claude when Codex wrote
   the change), each following its agent
@@ -121,7 +121,7 @@ deepening in code that already exists.
     own repository): merge the branch into `main` on this machine
     (`git merge --no-ff <branch>`). No push, no pull request, no CI, no server,
     no staging. Nothing is pushed, so `.githooks/pre-push` never runs here:
-    `npm run verify` before each commit and `/review` before each merge are the
+    `npm run verify` before each commit and `/cross-review` before each merge are the
     gates.
   - **Project on GitHub** (`origin` is the person's own repository): push the
     branch and open a pull request; CI runs the same checks there; merge after

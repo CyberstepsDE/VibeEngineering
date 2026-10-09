@@ -15,7 +15,7 @@ case "$common_dir" in /*) ;; *) common_dir="$(git rev-parse --show-toplevel)/$co
 manifest="$common_dir/review-evidence/$sha/manifest.json"
 
 if [ ! -f "$manifest" ]; then
-  echo "NOT REVIEWED: no review evidence for $sha. Run scripts/review.sh (or /review)."
+  echo "NOT REVIEWED: no review evidence for $sha. Run scripts/review.sh (or /cross-review)."
   exit 1
 fi
 command -v jq >/dev/null 2>&1 || { echo "NOT CHECKED: jq is missing, cannot read $manifest."; exit 1; }
