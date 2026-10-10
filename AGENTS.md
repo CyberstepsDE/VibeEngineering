@@ -83,9 +83,7 @@ regression test wherever a test can reach the bug (when none can, it says so).
   Claude Code a hook refuses it (`.claude/hooks/no-main-commit.sh` - only exit 2
   blocks); for every tool and person, `.githooks/pre-push` refuses a push to main.
 - Run the full check before every commit: `npm run verify`. All of it green, no
-  exceptions, and never remove or weaken a check to make it pass (in Claude Code,
-  `.claude/hooks/config-guard.sh` asks the person before a file that defines a
-  check changes). `.githooks/pre-push` runs
+  exceptions, and never remove or weaken a check to make it pass. `.githooks/pre-push` runs
   it again and refuses to push a red commit when that commit is your clean
   checkout (otherwise it prints NOT VERIFIED and CI is the check);
   `.githooks/pre-commit` scans staged changes for secrets when gitleaks is
