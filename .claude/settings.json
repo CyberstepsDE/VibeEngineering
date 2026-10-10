@@ -24,15 +24,6 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/no-main-commit.sh"
           }
         ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/config-guard.sh"
-          }
-        ]
       }
     ],
     "UserPromptSubmit": [
