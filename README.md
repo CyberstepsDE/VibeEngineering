@@ -60,7 +60,7 @@ Every tracked file, and why it is there:
 │   ├── check-reviews.sh               - does this commit carry two SHIP verdicts
 │   └── read-review-verdict.sh         - reads one verdict, strictly
 ├── .github/
-│   ├── workflows/ci.yml               - CI: typecheck, lint, test, build, audit and a secret scan on every pull request
+│   ├── workflows/ci.yml               - CI: typecheck, lint, test, build, audit and a secret scan on every pull request, on Linux and on Windows
 │   └── pull_request_template.md       - what a pull request here must say
 ├── docs/
 │   ├── DEPLOYMENT.md                  - for the agent: putting a project online, when the person wants it (any host)
@@ -78,6 +78,7 @@ Every tracked file, and why it is there:
 ├── playwright.config.ts               - browser test setup
 ├── package.json, package-lock.json    - scripts and pinned dependencies
 ├── .nvmrc                             - the Node version, picked up by nvm automatically
+├── .gitattributes                     - LF line endings on every machine, Windows included
 └── .gitignore                         - what never gets committed (.env files above all)
 ```
 
@@ -93,18 +94,44 @@ Three words worth defining once:
 
 ## Requirements
 
-- [Node.js](https://nodejs.org) 22.12 or newer. With `nvm`, run `nvm use` in this
-  folder and it picks the right version from `.nvmrc`.
+- **Git, Node.js 22.12 or newer, and jq.** Git keeps the history; Node.js runs the
+  app and its checks (`.nvmrc`); jq is used by the commit hook (and so by its
+  tests in `npm run verify`) and by the review script.
 - An AI coding agent: [Claude Code](https://code.claude.com), Codex CLI, or
   similar. The template is written for any of them. Having BOTH Claude Code and
-  Codex makes the review independent (one writes, the other reviews).
-- `jq`, used by the commit hook (and so by its tests in `npm run verify`) and by
-  the review script (`brew install jq`; preinstalled on recent macOS).
+  Codex makes the review independent (one writes, the other reviews); with one
+  tool, both passes run on it and are recorded as `same-tool`.
 - Recommended: [gitleaks](https://github.com/gitleaks/gitleaks), so a secret is
-  caught on your machine before it is pushed (`brew install gitleaks`). Without it
-  the commit hook warns and CI still scans.
+  caught on your machine before it leaves it. Without it the commit hook warns and
+  CI still scans.
 - Optional: a [GitHub](https://github.com) account, once you want the project on
   GitHub (pull requests and CI). A local project needs none.
+
+### Windows
+
+Run these once in PowerShell. Windows may ask for administrator approval for
+Node.js; only you can give it. Skip what you already have (check with
+`git --version`, `node --version`, `jq --version`, `claude --version`).
+
+```powershell
+winget install --id Git.Git -e --source winget
+winget install --id OpenJS.NodeJS.LTS -e
+winget install --id jqlang.jq -e
+winget install --id Gitleaks.Gitleaks -e
+irm https://claude.ai/install.ps1 | iex
+```
+
+Then **close every terminal and open a new PowerShell**, so Windows finds the new
+tools. Git for Windows matters twice: Claude Code runs its commands and this
+template's hooks through its Git Bash. Use Node.js LTS from the installer above
+rather than a version manager. Keep projects outside OneDrive or other synced
+folders.
+
+### macOS
+
+`brew install node jq gitleaks` (git comes with the Xcode command line tools), and
+Claude Code from its [setup page](https://code.claude.com/docs/en/setup). With
+`nvm`, run `nvm use` in this folder and it picks the version from `.nvmrc`.
 
 ## How to use it, step by step
 
@@ -112,6 +139,8 @@ Three words worth defining once:
    ```bash
    git clone https://github.com/CyberstepsDE/VibeEngineering.git my-project
    ```
+   On Windows, run it in PowerShell after the setup above. Clone it, do not
+   download it as a ZIP: the way of working needs git.
    That is all a local project needs. If you want the project on GitHub from
    the start, press "Use this template" -> "Create a new repository" instead and
    clone your new repository; later works too, the agent can connect it for you.

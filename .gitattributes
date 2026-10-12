@@ -1,0 +1,4 @@
+# Every text file keeps LF line endings on every machine, Windows included:
+# the shell scripts and hooks need it, and a project should not change its
+# files depending on the laptop it was cloned on.
+* text=auto eol=lf
