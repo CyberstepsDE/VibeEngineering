@@ -125,9 +125,10 @@ Watch the road, in order:
 2. The **push** makes Vercel build a **preview**: a shareable address just for
    this branch. Open it - the new title is live.
 3. The **pull request** makes CI run `npm run verify` on GitHub's machines -
-   watch the three checks turn green on the pull request page: `verify` (the
-   project's own gate), `secrets` (a scan of the whole history for keys and
-   passwords) and `browser` (a robot browser clicking the page). (They run on the
+   watch the four checks turn green on the pull request page: `verify` (the
+   project's own gate), `windows` (the same gate on a Windows machine),
+   `secrets` (a scan of the whole history for keys and passwords) and `browser`
+   (a robot browser clicking the page). (They run on the
    pull request, not on a bare branch push.)
 4. **Merge** - the button is yours. Vercel builds `main`, and the **production**
    address shows the change.
@@ -137,7 +138,7 @@ builds production.** It holds for the rest of the lab, and for any project that
 takes the same GitHub and Vercel path.
 
 **Done looks like:** the new title is live at the production address, and you
-watched it pass the preview and all three green checks on the way there.
+watched it pass the preview and all four green checks on the way there.
 
 **If it drags:** the preview address is on the pull request page and in the
 Vercel dashboard; the green checks live on the pull request.
@@ -408,7 +409,7 @@ list - a review that names its attack paths teaches more than a bare pass. If
 time is short, fix only the findings that carry an executable sequence and keep
 the rest as notes.
 
-## Stage 6: merge - two SHIPs, three green robot checks, and production builds itself
+## Stage 6: merge - two SHIPs, four green robot checks, and production builds itself
 
 Two different gates guard `main` - minds, and a robot - and the pull request
 page is where both show.
