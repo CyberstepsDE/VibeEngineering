@@ -1,5 +1,5 @@
 {
-  "description": "Project guardrails for Codex. Codex runs project hooks only after you trust them once with /hooks (again after a hook changes).",
+  "description": "Project guardrails for Codex. Codex runs project hooks only after you trust them once with /hooks (again after a hook changes). On Windows Codex runs hooks in PowerShell, where /bin/sh does not exist, so commandWindows reads the same reminder line out of the script.",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -7,6 +7,7 @@
           {
             "type": "command",
             "command": "/bin/sh \"$(git rev-parse --show-toplevel)/.claude/hooks/critical-thinking-reminder.sh\"",
+            "commandWindows": "(Select-String -LiteralPath ((git rev-parse --show-toplevel) + '/.claude/hooks/critical-thinking-reminder.sh') -Pattern '^CRITICAL THINKING:').Line",
             "timeout": 3
           }
         ]

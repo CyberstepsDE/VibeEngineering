@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse[Bash] guard: never commit on the main branch.
+# PreToolUse[Bash|PowerShell] guard: never commit on the main branch.
 #
 # AGENTS.md section 3 is explicit - work happens on a short-lived branch, never
 # straight on main. This hook is the code that makes that a rule instead of a
@@ -16,6 +16,17 @@
 # directory, which the event carries as `cwd`. The hook process itself runs in the project folder, and in a desktop
 # app session that is not where the session works (each session has its own
 # worktree), so judging the process directory refuses honest work.
+#
+# TWO SHELL TOOLS. On Windows, Claude Code can also run commands through its
+# PowerShell tool, and when that tool is on it is the main shell; a hook that
+# matches only Bash never sees those commands (code.claude.com/docs/en/hooks,
+# "PowerShell"). So .claude/settings.json matches Bash|PowerShell, and this
+# script reads PowerShell's own spelling: Set-Location and Push-Location (and
+# their aliases) next to cd, and a backslash in a path as a separator (as git on
+# Windows and PowerShell's own commands everywhere read it), while in Bash it
+# stays an escape character.
+# The hook itself always runs in Git Bash on Windows; without Git Bash it cannot
+# run at all, and settings.json lets the command through ("onFailure").
 #
 # EXIT CODES MATTER: in Claude Code hooks, ONLY exit 2 blocks the action.
 # Exit 1 is a non-blocking error and the action proceeds. Fails OPEN by design:
@@ -46,6 +57,7 @@ printf '%s' "$input" | grep -qE '\bgit\b[^;|&]*\bcommit\b' || exit 0
 # "git ... commit" anywhere in them; it never refuses anything.)
 command_line=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null | tr -d '\r')
 [ -n "$command_line" ] || exit 0
+tool=$(printf '%s' "$input" | jq -r '.tool_name // empty' 2>/dev/null | tr -d '\r')
 
 # Is "commit" the git SUBCOMMAND - the first token after "git" that does not
 # start with "-"? -C, -c, --git-dir, --work-tree and --namespace may take their
@@ -86,6 +98,30 @@ unquote() {
   printf '%s' "$t"
 }
 
+lower() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+
+# A path argument as the tool's shell reads it: in PowerShell `..\app` is
+# `../app`. Git Bash, which runs this hook on Windows, accepts C:/... as well.
+path_arg() {
+  local v
+  v=$(unquote "$1")
+  [ "$tool" = PowerShell ] && v=${v//\\//}
+  printf '%s' "$v"
+}
+
+# The command that changes the directory a later command runs in. PowerShell
+# has several names for it, all case-insensitive (cd, chdir and sl are aliases
+# of Set-Location, pushd of Push-Location); Bash has cd.
+is_cd() {
+  if [ "$tool" = PowerShell ]; then
+    case "$(lower "$1")" in
+      cd | chdir | sl | set-location | pushd | push-location) return 0 ;;
+    esac
+    return 1
+  fi
+  [ "$1" = cd ]
+}
+
 # A path the shell would still expand ($VAR, $(...), `...`, ~) cannot be judged.
 opaque() {
   case "$1" in *'$'* | *'`'* | '~'*) return 0 ;; esac
@@ -101,8 +137,10 @@ opts=()
 found=0
 while read -r seg; do
   read -ra tokens <<< "$seg"
-  if [ "${tokens[0]:-}" = "cd" ]; then
-    cd_target=$(unquote "${tokens[1]:-~}")
+  if is_cd "${tokens[0]:-}"; then
+    target=${tokens[1]:-~}
+    case "$(lower "$target")" in -path | -literalpath) target=${tokens[2]:-~} ;; esac
+    cd_target=$(path_arg "$target")
     continue
   fi
   is_commit_invocation "$seg" || continue
@@ -113,12 +151,12 @@ while read -r seg; do
     t=${tokens[$i]}
     case "$t" in
       -C | --git-dir | --work-tree)
-        v=$(unquote "${tokens[$((i + 1))]:-}")
+        v=$(path_arg "${tokens[$((i + 1))]:-}")
         opaque "$v" && exit 0
         if [ "$t" = "-C" ]; then opts+=("-C" "$v"); else opts+=("$t=$v"); fi
         i=$((i + 2)) ;;
       --git-dir=* | --work-tree=*)
-        v=$(unquote "${t#*=}")
+        v=$(path_arg "${t#*=}")
         opaque "$v" && exit 0
         opts+=("${t%%=*}=$v")
         i=$((i + 1)) ;;

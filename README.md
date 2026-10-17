@@ -72,7 +72,7 @@ Every tracked file, and why it is there:
 ├── tests/                             - one placeholder test per harness, named as something to delete
 │   ├── placeholder.test.ts            - unit (Vitest)
 │   ├── placeholder.browser.test.ts    - browser (Playwright)
-│   └── hooks/                         - fixtures for the commit guard, the push hook and the verdict reader; keep them
+│   └── hooks/                         - fixtures for the commit guard, the push hook, the verdict reader and the Codex reminder; keep them
 ├── index.html, vite.config.ts         - Vite app shell
 ├── tsconfig*.json, eslint.config.js   - TypeScript strict + ESLint, zero warnings allowed
 ├── playwright.config.ts               - browser test setup

@@ -108,7 +108,10 @@ chat: to log in, and on Windows to install what is missing.
 
 1. **The shell.** Every command of this template runs in a POSIX shell: on macOS
    the normal terminal, on Windows Git Bash, which Claude Code uses for its Bash
-   tool. Check with `uname -s` (on Windows it starts with `MINGW` or `MSYS`) and
+   tool. If you also have a PowerShell tool, Claude Code prefers it on Windows:
+   run this template's commands with the Bash tool anyway, because its scripts
+   and the commands in its skills are written for a POSIX shell. Check with
+   `uname -s` (on Windows it starts with `MINGW` or `MSYS`) and
    `echo "$BASH_VERSION"`. If you have no Bash tool on Windows, Git for Windows is
    missing or not found: the person installs it (README, "Windows") or sets
    `CLAUDE_CODE_GIT_BASH_PATH` to its `bash.exe`, then restarts Claude Code. Stop
