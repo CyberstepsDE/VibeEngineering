@@ -3,6 +3,9 @@
 # (.codex/hooks.json). Both add this hook's plain output to the model's context
 # for the message being answered. It never blocks. Keep it short: it is read on
 # every single message. Detail: rules/critical-thinking.md.
+# Keep the reminder ONE line starting with "CRITICAL THINKING:": Codex on Windows
+# runs hooks in PowerShell, not sh, and reads that line out of this file
+# (.codex/hooks.json, commandWindows; tests/hooks/codex-reminder.test.ts).
 cat >/dev/null
 
 cat <<'EOF'

@@ -6,13 +6,16 @@
 // depends on the branch this suite happens to run from.
 
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { afterAll, describe, expect, it } from 'vitest'
 
+import { posixShell } from './posix-shell.ts'
+
 const HOOK = join(process.cwd(), '.claude/hooks/no-main-commit.sh')
+const BASH = posixShell('bash')
 const temps: string[] = []
 
 // Git exports GIT_DIR and friends into the hooks it runs, and they outrank
@@ -49,12 +52,14 @@ function runHook(
   cwd: string,
   eventCwd?: string,
   description?: string,
+  tool?: 'PowerShell',
 ): number {
   try {
-    execFileSync('bash', [HOOK], {
+    execFileSync(BASH, [HOOK], {
       input: JSON.stringify({
         // Claude Code always sends the session's cwd; default it to the process's.
         cwd: eventCwd ?? cwd,
+        ...(tool ? { tool_name: tool } : {}),
         tool_input: { command, ...(description ? { description } : {}) },
       }),
       cwd,
@@ -65,6 +70,11 @@ function runHook(
   } catch (err) {
     return (err as { status?: number }).status ?? 1
   }
+}
+
+/** The same event from Claude Code's PowerShell tool, the main shell on Windows when it is on. */
+function runPowerShellHook(command: string, cwd: string, eventCwd?: string): number {
+  return runHook(command, cwd, eventCwd, undefined, 'PowerShell')
 }
 
 afterAll(() => {
@@ -169,7 +179,7 @@ describe('no-main-commit hook', SPAWN_TIMEOUT, () => {
       const mainRepo = repoOnBranch('main')
       let code = 0
       try {
-        execFileSync('bash', [HOOK], {
+        execFileSync(BASH, [HOOK], {
           input: JSON.stringify({ tool_input: { command: 'git commit -m x' } }),
           cwd: mainRepo,
           stdio: 'pipe',
@@ -179,6 +189,62 @@ describe('no-main-commit hook', SPAWN_TIMEOUT, () => {
         code = (err as { status?: number }).status ?? 1
       }
       expect(code).toBe(0)
+    })
+  })
+
+  describe("reads PowerShell's spelling (Claude Code's PowerShell tool)", () => {
+    it('blocks Set-Location, Push-Location and their aliases, in any letter case, with or without -Path', () => {
+      const dir = repoOnBranch('main')
+      const session = repoOnBranch('feat/elsewhere')
+      for (const change of [
+        `Set-Location ${dir}`,
+        `set-location -Path '${dir}'`,
+        `Push-Location -LiteralPath "${dir}"`,
+        `sl ${dir}`,
+        `cd ${dir}`,
+      ]) {
+        expect(runPowerShellHook(`${change}; git commit -m x`, session), change).toBe(2)
+      }
+    })
+
+    it('judges the folder Set-Location moved to, not the session', () => {
+      const session = repoOnBranch('main')
+      const feature = repoOnBranch('feat/some-scope')
+      expect(runPowerShellHook(`Set-Location ${feature}; git commit -m x`, session)).toBe(0)
+    })
+
+    it('reads a backslash as a path separator, with cd and with -C', () => {
+      const dir = repoOnBranch('main')
+      const session = repoOnBranch('feat/elsewhere')
+      const parent = join(dir, '..')
+      const name = dir.slice(parent.length + 1)
+      expect(runPowerShellHook(`Set-Location .\\${name}; git commit -m x`, session, parent)).toBe(2)
+      expect(runPowerShellHook(`git -C .\\${name} commit -m x`, session, parent)).toBe(2)
+    })
+
+    it('blocks a commit whose message is a here-string over several lines', () => {
+      const dir = repoOnBranch('main')
+      expect(runPowerShellHook("git commit -m @'\nFix the form\n\nShow the message.\n'@", dir)).toBe(2)
+    })
+
+    it('allows a commit on a feature branch and ignores read-only commands', () => {
+      expect(runPowerShellHook('git commit -m x', repoOnBranch('feat/some-scope'))).toBe(0)
+      expect(runPowerShellHook('git log --oneline --grep=commit -5', repoOnBranch('main'))).toBe(0)
+    })
+  })
+
+  describe('Windows paths', () => {
+    // Claude Code sends C:\... as the session's cwd; a command in Git Bash may
+    // spell the same folder C:\..., C:/... or /c/.... Only Windows has them.
+    it.runIf(process.platform === 'win32')('blocks the same repository in each Windows spelling', () => {
+      const dir = repoOnBranch('main')
+      const session = repoOnBranch('feat/elsewhere')
+      const forward = dir.replace(/\\/g, '/')
+      const msys = forward.replace(/^([A-Za-z]):/, (_match, drive: string) => `/${drive.toLowerCase()}`)
+      for (const path of [dir, forward, msys]) {
+        expect(runHook(`cd "${path}" && git commit -m x`, session), path).toBe(2)
+        expect(runHook(`git -C "${path}" commit -m x`, session), path).toBe(2)
+      }
     })
   })
 
@@ -210,11 +276,30 @@ describe('no-main-commit hook', SPAWN_TIMEOUT, () => {
       const dir = repoOnBranch('feat/some-scope')
       let code = 0
       try {
-        execFileSync('bash', [HOOK], { input: 'not json at all', cwd: dir, stdio: 'pipe', env: ENV })
+        execFileSync(BASH, [HOOK], { input: 'not json at all', cwd: dir, stdio: 'pipe', env: ENV })
       } catch (err) {
         code = (err as { status?: number }).status ?? 1
       }
       expect(code).toBe(0)
     })
+  })
+})
+
+describe('.claude/settings.json', () => {
+  it('runs the guard for both shell tools, and lets the command through when the hook cannot run', () => {
+    // On Windows without Git Bash the hook runs in PowerShell and cannot start;
+    // without "continue" Claude Code would then block every PowerShell command.
+    type Hook = { command: string; onFailure?: string }
+    type Settings = { hooks: { PreToolUse: { matcher: string; hooks: Hook[] }[] } }
+    const settings = JSON.parse(
+      readFileSync(join(process.cwd(), '.claude/settings.json'), 'utf8'),
+    ) as Settings
+    const group = settings.hooks.PreToolUse.find((g) =>
+      g.hooks.some((h) => h.command.includes('no-main-commit.sh')),
+    )
+    const matches = new RegExp(`^(?:${group?.matcher ?? ''})$`)
+    expect(matches.test('Bash')).toBe(true)
+    expect(matches.test('PowerShell')).toBe(true)
+    expect(group?.hooks[0]?.onFailure).toBe('continue')
   })
 })

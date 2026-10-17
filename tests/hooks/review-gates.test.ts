@@ -10,8 +10,11 @@ import { join } from 'node:path'
 
 import { afterAll, describe, expect, it } from 'vitest'
 
+import { posixShell } from './posix-shell.ts'
+
 const READER = join(process.cwd(), 'scripts/read-review-verdict.sh')
 const PRE_PUSH = join(process.cwd(), '.githooks/pre-push')
+const SH = posixShell('sh')
 const temps: string[] = []
 
 function transcript(text: string): string {
@@ -23,7 +26,7 @@ function transcript(text: string): string {
 }
 
 function verdict(file: string): string {
-  return execFileSync('sh', [READER, file], { encoding: 'utf8' }).trim()
+  return execFileSync(SH, [READER, file], { encoding: 'utf8' }).trim()
 }
 
 afterAll(() => {
@@ -73,7 +76,7 @@ describe('.githooks/pre-push', SPAWN_TIMEOUT, () => {
     writeFileSync(join(dir, 'helper.ts'), 'export const forgotten = true\n')
     const sha = git('rev-parse', 'HEAD')
 
-    const run = spawnSync('sh', [PRE_PUSH, 'origin', 'url'], {
+    const run = spawnSync(SH, [PRE_PUSH, 'origin', 'url'], {
       cwd: dir,
       env: ENV,
       input: `refs/heads/feature ${sha} refs/heads/feature ${'0'.repeat(40)}\n`,
@@ -89,7 +92,7 @@ describe('.githooks/pre-push', SPAWN_TIMEOUT, () => {
     let status = 0
     let stderr = ''
     try {
-      execFileSync('sh', [PRE_PUSH, 'origin', 'url'], {
+      execFileSync(SH, [PRE_PUSH, 'origin', 'url'], {
         input: `refs/heads/feature ${sha} refs/heads/main ${'0'.repeat(40)}\n`,
         stdio: 'pipe',
       })

@@ -41,6 +41,9 @@ diff before anything else.
 scripts/review.sh <claude|codex|other> <base> "<the outcome sentence>"
 ```
 
+It is a POSIX shell script: in Claude Code run it with the Bash tool, which on
+Windows is Git Bash, not PowerShell.
+
 The first argument names who WROTE the change: `claude`, `codex`, or `other`
 for another agent or a person working in this repository. The script:
 
